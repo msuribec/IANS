@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.linalg import inv
+
 class CleanData:
     def __init__(self, data):
         self.data = data
@@ -14,4 +15,3 @@ class CleanData:
     def get_inv_covmat(self):
         cov = np.cov(self.norm_data.T)    
         self.inv_covmat = inv(cov)
-

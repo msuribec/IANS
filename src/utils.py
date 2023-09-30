@@ -5,6 +5,13 @@ import sys
 import venv
 import colorsys
 
+
+def clean_dataframe(df, columns_econde = None):
+    df = df.dropna()
+    if columns_econde is not None:
+        df = pd.get_dummies(df, columns=columns_econde)
+    return df
+
 def create_folders_if_not_exist(folder_paths):
     """Function that creates folders if they don't exist
     Parameters
