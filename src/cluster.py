@@ -4,9 +4,20 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-
-# Graficas de clusters
 class Cluster:
+    """Class that represents a cluster of points in a dataset
+    Attributes:
+        data (np.array):
+            normalized array (N x M ) of the data to cluster. N is the number of points in the dataset and M is the number of features
+        distance_matrix (np.array):
+            distance matrix (N X N) where position i,j holds the distance between point i and point j
+        distance_name (str):
+            name  of the distance used to calculate the distance matrix
+        algorithm (str):
+            name of the clustering algorithm to use
+        clustering_args (dict):
+            arguments for the clustering algorithm
+    """
     def __init__(self, data, distance_matrix, algorithm, clustering_args, distance_name):
 
         create_folders_if_not_exist(['Results', 'Results/Clusters', f'Results/Clusters/{algorithm}/{distance_name}'])
@@ -15,13 +26,20 @@ class Cluster:
         self.distance_name = distance_name
         self.algorithm = algorithm
         self.clustering_args = clustering_args
+
+        # Name to put in the figure titles
         params_strs = [f'{name} = {clustering_args[name]}'for name in clustering_args]
         self.name =  algorithm + ' with ' + distance_name + ' ' +  ','.join(params_strs)
+
+        # path where the 3d image of the clusters will be saved
         self.img_path = f'Results/Clusters/{algorithm}/{distance_name}/clusters {self.name}.png'
+
+        # Path where the membership matrix will be saved
         self.memership_mat_path = f'Results/Clusters/{algorithm}/{distance_name}/memberships {self.name}.csv'
         self.cluster()
     
     def cluster(self):
+        """Clusters the data using the specified algorithm and arguments"""
 
         if self.algorithm == 'neighbours':
             self.groups = self.naive_k_neighbours_clustering(**self.clustering_args)
@@ -31,6 +49,14 @@ class Cluster:
         self.n_sets = len(self.groups)
 
     def naive_k_neighbours_clustering(self,k = 10):
+        """Clusters the data using the naive k neighbours algorithm
+        Parameters:
+            k (int):
+                number of neighbours to use
+        Returns:
+            groups (list):
+                list of lists. Each list contains the indexes of the points in the same cluster
+        """
         N = self.distance_matrix.shape[0]
 
         classified_points = set()
@@ -60,6 +86,15 @@ class Cluster:
 
 
     def naive_box_clustering(self, threshold = 0.25):
+        """Clusters the data using the naive box clustering algorithm
+        Parameters:
+            threshold (float):
+                maximum distance between two points to be in the same cluster
+        Returns:
+            groups (list):
+                list of lists. Each list contains the indexes of the points in the same cluster 
+        """
+
         N = self.distance_matrix.shape[0]
 
         classified_points = set()
@@ -86,6 +121,10 @@ class Cluster:
         return groups
     
     def get_membership(self):
+        """Saves the membership matrix of the clustering algorithm in a csv file
+        The membership matrix is a (N X C) where N is the number of points and C the number of sets or clusters.
+        position i,j of the matrix is 1 if point i belongs to set j and 0 otherwise
+        """
         self.memebership_matrix = np.zeros((self.data.shape[0],len(self.groups)))
         for i,group in enumerate(self.groups):
             for j in group:
@@ -96,6 +135,13 @@ class Cluster:
 
 
     def graph_clusters(self, indexes = [0,1,2]):
+        """Graphs the clusters in a 3d plot and saves it to the path specified in the constructor.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 3
+            
+        """
 
         M = self.data.shape[1]
 

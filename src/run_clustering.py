@@ -4,8 +4,23 @@ from itertools import product
 from cluster import Cluster
 from process import CleanData
 from distances import DistanceMatrices
+import sys
 
 def get_params_for_algortihm(distance_mat, n_intervals = 4, steps = 10, algorithms = ['neighbours', 'boxes']):
+    """Returns a dictionary with the parameters for each algorithm
+    Parameters:
+        distance_mat (np.array):
+            distance matrix of the data
+        n_intervals (int):
+            number of intervals to use in the boxes algorithm
+        steps (int):
+            number of steps to use in the neighbours algorithm
+        algorithms (list):
+            list of the algorithms to use
+    Returns:
+        algo_params (dict):
+            dictionary with the parameters for each algorithms
+    """
 
     min_d = np.min(distance_mat)
     max_d = np.max(distance_mat)
@@ -43,6 +58,12 @@ def get_params_for_algortihm(distance_mat, n_intervals = 4, steps = 10, algorith
     return algo_params
 
 def run_all_clustering_algorithms(raw_data):
+
+    """Runs all the clustering algorithms for the given data
+    Parameters:
+        raw_data (np.array):
+            array (N x M) of the data to cluster. N is the number of points in the dataset and M is the number of features
+    """
 
 
     cd = CleanData(raw_data)
@@ -89,7 +110,8 @@ def run_all_clustering_algorithms(raw_data):
 
 if __name__ == '__main__':
     reader = ReadData()
-    data_df = reader.read_file('Data/iris.csv')
+    file_name = sys.argv.pop(1)
+    data_df = reader.read_file(file_name)
     raw_data = data_df.drop(['variety'], axis=1).to_numpy()
     run_all_clustering_algorithms(raw_data)
 
