@@ -10,7 +10,7 @@ class DistanceMatrices:
     def __init__(self):
         pass
 
-    def compute_distance_matrices(self, data, distance_definitions):
+    def compute_distance_matrices(self, data, distance_definitions, vertices = None):
         """Computes and graphs the distance matrices for the given data and distance definitions
         Parameters:
         data (np.array):
@@ -43,13 +43,18 @@ class DistanceMatrices:
         """
         create_folders_if_not_exist(['Results', 'Results/Distance Matrices','Results/Distance to vertices', 'Results/Classifications'])
         self.distance_matrices = {}
+        self.distance_matrices_vertices = {}
         for distance_id in distance_definitions:
             params = distance_definitions[distance_id]
-            dist_matrix = self.compute_distance_matrix(data,**params)
+            dist_matrix = self.compute_distance_matrix_fast(data,data,**params)
             self.distance_matrices[distance_id] = dist_matrix
             self.graph_distance_matrix(dist_matrix, distance_id, False)
+            if vertices is not None:
+                dist_matrix_vertices = self.compute_distance_matrix_fast(data,vertices,**params)
+                self.distance_matrices_vertices[distance_id] = dist_matrix_vertices
+                self.graph_distance_matrix(dist_matrix_vertices, distance_id, True)
 
-    def get_distance(self,v1,v2,distance, p=None, inv_covmat = None):
+    def get_distance(self,v1,v2,distance_name= 'Euclidean', p=None, inv_covmat = None):
         """Computes the distance between two vectors
         Parameters:
             v1 (np.array):
@@ -66,25 +71,61 @@ class DistanceMatrices:
             dist_v1v2 (float):
                 distance between v1 and v2
         """
-        if distance == 'Euclidean':
+        if distance_name == 'Euclidean':
             dist_v1v2 = self.minkowski(v1,v2, 2)
-        elif distance == 'Manhattan':
+        elif distance_name == 'Manhattan':
             dist_v1v2 =  self.minkowski(v1,v2, 1)
-        elif distance == 'Minkowski':
+        elif distance_name == 'Minkowski':
             assert p is not None, "p must be specified when using p_distance"
             dist_v1v2 =  self.minkowski(v1,v2, p)
-        elif distance == 'Mahalanobis':
+        elif distance_name == 'Mahalanobis':
             dist_v1v2 = self.mahalanobis(v1,v2,inv_covmat)   
-        elif distance == 'Cosine':
+        elif distance_name == 'Cosine':
             dist_v1v2 = self.cosine_distance(v1,v2)
         return dist_v1v2
+
+    def get_distance_vector(self,V,v1,distance_name= 'Euclidean', p=None, inv_covmat = None):
+        """Computes the distance between two vectors
+        Parameters:
+            v1 (np.array):
+                vector 1
+            v2 (np.array):
+                vector 2
+            distance (str):
+                name of the distance to compute. Accepted values are: Euclidean, Manhattan, Minkowski, Mahalanobis and Cosine
+            p (int):
+                parameter for the Minkowski distance. If distance is not Minkowski, this parameter is ignored
+            inv_covmat (np.array):
+                inverse of the covariance matrix of the data. If distance is not Mahalanobis, this parameter is ignored
+        Returns:
+            dist_v1v2 (float):
+                distance between v1 and v2
+        """
+        if distance_name == 'Euclidean':
+            dist_v1v2 = np.sqrt(np.sum(np.power((V-v1),2), axis = 1))
+        elif distance_name == 'Manhattan':
+            dist_v1v2 = np.sum(np.abs(V-v1), axis = 1)
+        elif distance_name == 'Minkowski':
+            assert p is not None, "p must be specified when using p_distance"
+            return np.sum((V-v1)**2, axis = 1)
+        elif distance_name == 'Mahalanobis':
+            dist_v1v2 = np.sqrt(np.diag((V-v1) @ inv_covmat @ (V-v1).T))
+        elif distance_name == 'Cosine':
+            norm_V = np.sqrt(np.sum(V**2, axis = 1))
+            norm_v1 = np.sqrt(np.sum(v1**2))
+            simil = np.dot(V,v1)/(norm_V*norm_v1)
+            simil[np.isnan(simil)] = 0
+            dist_v1v2 = 1 - simil
+        return dist_v1v2
         
-    def compute_distance_matrix(self,x, distance_name = 'Euclidean', p=2, inv_covmat= None):
+    def compute_distance_matrix(self,x, y = None, distance_name = 'Euclidean', p=2, inv_covmat= None):
 
         """Computes the distance matrix for the given data and distance definition
         Parameters:
             x (np.array):
-                array (N x M) of the normalized data to cluster. N is the number of points in the dataset and M is the number of features
+                array (N1 x M) of the normalized data. N1 is the number of points in the dataset and M is the number of features
+            y (np.array):
+                array (N2 x M) of the normalized data. N1 is the number of points in the dataset and M is the number of features
             distance_name (str):
                 name of the distance to compute. Accepted values are: Euclidean, Manhattan, Minkowski, Mahalanobis and Cosine
             p (int):
@@ -93,21 +134,80 @@ class DistanceMatrices:
                 inverse of the covariance matrix of the data. If distance is not Mahalanobis, this parameter is ignored
         Returns:
             md (np.array):
-                distance matrix (N X N) where position i,j holds the distance between point i and point j
+                distance matrix (N1 X N2) where position i,j holds the distance between point i of matrix x and and point j of matrix y
         """
-        
-        md = -1 * np.ones((x.shape[0],x.shape[0]))
+
+        symmetry = False
+
+        if y is None:
+            y = x
+            symmetry = True
+
+        md = -1 * np.ones((x.shape[0],y.shape[0]))
 
         for i in range(x.shape[0]):
-            for j in range(x.shape[0]):
-                if i == j:
+            for j in range(y.shape[0]):
+                if i == j and symmetry:
                     dist_ij = 0
                     md[i,j] = dist_ij
                 elif md[i,j] == -1:
-                
-                    dist_ij = self.get_distance(x[i,:], x[j,:], distance_name,p=p, inv_covmat= inv_covmat)
+                    dist_ij = self.get_distance(x[i,:], y[j,:], distance_name,p=p, inv_covmat= inv_covmat)
                     md[i,j] = dist_ij
-                    md[j,i] = dist_ij
+                    if y is symmetry:
+                        md[j,i] = dist_ij
+        return md
+    
+        
+    def compute_distance_matrix_fast(self,x, y, distance_name = 'Euclidean', p=2, inv_covmat= None):
+
+        """Computes the distance matrix for the given data and distance definition
+        Parameters:
+            x (np.array):
+                array (N1 x M) of the normalized data. N1 is the number of points in the dataset and M is the number of features
+            y (np.array):
+                array (N2 x M) of the normalized data. N1 is the number of points in the dataset and M is the number of features
+            distance_name (str):
+                name of the distance to compute. Accepted values are: Euclidean, Manhattan, Minkowski, Mahalanobis and Cosine
+            p (int):
+                parameter for the Minkowski distance. If distance is not Minkowski, this parameter is ignored
+            inv_covmat (np.array):
+                inverse of the covariance matrix of the data. If distance is not Mahalanobis, this parameter is ignored
+        Returns:
+            md (np.array):
+                distance matrix (N1 X N2) where position i,j holds the distance between point i of matrix x and and point j of matrix y
+        """
+
+        md = np.zeros((x.shape[0],y.shape[0]))
+        for j in range(y.shape[0]):
+            md[:,j] = self.get_distance_vector(x,y[j,:],distance_name,p=p, inv_covmat= inv_covmat)
+        return md
+    
+    
+    def compute_distance_vector(self,X, y, distance_name = 'Euclidean', p=2, inv_covmat= None):
+        
+
+        """Computes the distance vector between each vector of X and the vector y for the given data and distance definition
+        Parameters:
+            X (np.array):
+                array (N1 x M) of the normalized data. N1 is the number of points in the dataset and M is the number of features
+            y (np.array):
+                array (M X 1) of the normalized data. M is the number of features
+            distance_name (str):
+                name of the distance to compute. Accepted values are: Euclidean, Manhattan, Minkowski, Mahalanobis and Cosine
+            p (int):
+                parameter for the Minkowski distance. If distance is not Minkowski, this parameter is ignored
+            inv_covmat (np.array):
+                inverse of the covariance matrix of the data. If distance is not Mahalanobis, this parameter is ignored
+        Returns:
+            md (np.array):
+                distance matrix (N1 X N2) where position i,j holds the distance between point i of matrix x and and point j of matrix y
+        """
+
+        md = np.zeros(X.shape[0])
+
+        for i in range(X.shape[0]):
+            md[i] =  self.get_distance(X[i,:], y, distance_name,p=p, inv_covmat= inv_covmat)
+                    
         return md
 
 
@@ -125,7 +225,8 @@ class DistanceMatrices:
                 Mahalanobis distance between v1 and v2
         """
         dif_vector = v1-v2
-        return np.sqrt(np.matmul(np.matmul(dif_vector,inv_covmat),dif_vector.T))
+        squared_d = np.matmul(np.matmul(dif_vector,inv_covmat),dif_vector.T)
+        return np.sqrt(squared_d)
 
     def minkowski(self,v1,v2, p=2):
         """Computes the Minkowski distance between two vectors
@@ -137,7 +238,13 @@ class DistanceMatrices:
             p (int):
                 parameter for the Minkowski distance
         """
-        return np.power(np.sum(np.power(np.abs(v1-v2),p)),1./p)
+        if p == 2:
+            return np.sqrt(np.sum(np.power(v1-v2,p)))
+        elif p == 1:
+            return np.sqrt(np.sum(np.abs(v1-v2)))
+        else:
+            return np.power(np.sum(np.power(np.abs(v1-v2),p)),1./p)
+
 
     def cosine_distance(self,v1,v2):
         """Computes the cosine distance between two vectors
@@ -197,6 +304,7 @@ class DistanceMatrices:
         title = f'distance matrix'
         if vertices_matrix:
             path = f'Results/Distance to vertices/{distance.lower()}_vertices.png'
+            title = f'distance from points to vertices'
         else:
             path = f'Results/Distance Matrices/{distance.lower()}.png'
 

@@ -108,6 +108,8 @@ def run_all_clustering_algorithms(raw_data):
                 print(algo_name,dist_name,algo_params,n_sets)
 
 
+# TODO: guardar en Iris/Results
+
 if __name__ == '__main__':
     reader = ReadData()
     file_name = sys.argv.pop(1)

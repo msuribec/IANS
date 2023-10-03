@@ -2,6 +2,7 @@ from utils import create_folders_if_not_exist,getDistinctColors
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from distances import DistanceMatrices
 
 
 class Cluster:
@@ -18,6 +19,8 @@ class Cluster:
         clustering_args (dict):
             arguments for the clustering algorithm
     """
+
+    # TODO: change para que distance matrix sea opcional?
     def __init__(self, data, distance_matrix, algorithm, clustering_args, distance_name):
 
         create_folders_if_not_exist(['Results', 'Results/Clusters', f'Results/Clusters/{algorithm}/{distance_name}'])
@@ -131,7 +134,182 @@ class Cluster:
                 self.memebership_matrix[j,i] = 1
         df = pd.DataFrame(self.memebership_matrix)
         df.to_csv(self.memership_mat_path)
+
+
+    def get_memberships_from_centers(self,X, centers, distance_args):
+
+        N = X.shape[0]
+        d_x_centers = DistanceMatrices().compute_distance_matrix(centers, X, **distance_args)**2
+        index_min = np.argmin(d_x_centers, axis = 0)
+        membership = np.zeros((len(centers), N))
+        membership[index_min, np.arange(N)] = 1
+        return membership
+
+
+    # TODO: TEST mountain clustering desde acá
+    # TODO: integrar mountain clustering con el resto de los algoritmos
+    def mountain_clustering(self,X, distance_mat_v, grid, sigma, distance_args , beta = None,  tolerance = 0.5):
+
+        if beta is None:
+            beta = 1.5*sigma
+
+        DM = DistanceMatrices()
+        c = 0
+        n_points = grid.shape[0]
+        mountain = np.zeros(n_points)
+
+        while True:
         
+            if c == 0:
+                    d_vertex_x = distance_mat_v
+                    mountain = np.sum(np.exp(-(d_vertex_x**2)/(2*sigma**2)),axis=0)
+                    center = grid[np.argmax(mountain),:]
+                    max_density = max(mountain)
+                    first_max_density = max_density
+                    centers = np.array([center])
+            else:
+
+                d_vertex_center  = DM.get_distance_vector(grid, center, **distance_args)
+                aux = max_density*np.exp(-d_vertex_center**2/(2*beta**2))
+                mountain = mountain - aux
+
+                center = grid[np.argmax(mountain),:]
+                max_density = max(mountain)
+
+                center_in_list = np.any(np.equal(centers, center).all(axis=1))
+
+                if center_in_list:
+                    break
+                
+                centers = np.append(centers, center.reshape(1,-1), axis = 0)
+                criterion = abs(max_density/first_max_density)
+                if (criterion < tolerance):
+                    break
+            c += 1
+        
+        memberships = self.get_memberships_from_centers(X, centers, distance_args)
+        return centers,memberships
+
+    #TODO: integrar a otros algos
+    # TODO: TEST subtractive clustering desde acá
+    #TODO: tratar con rb = 2*ra
+
+    def subtractive_clustering(self, X, distance_args, ra, tol, rb = None):
+
+        if rb is None:
+            rb = 1.5*ra
+
+        DM = DistanceMatrices()
+        
+        count = 0 
+        rep_centers = 0
+
+        while True:
+            if count == 0:
+                matrix_distances  = DM.compute_distance_matrix_fast(X, X, **distance_args)
+                mountain = np.sum(np.exp(-(matrix_distances**2)/((0.5*ra)**2))   ,axis=0)
+
+                max_index = np.argmax(mountain)
+                center = X[max_index,:]
+                max_density = max(mountain)
+                    
+                first_max_density = max_density
+                centers = np.array([center])
+                tol = tol * abs(first_max_density)
+            else:
+                aux = max_density*np.exp(-(matrix_distances[:,max_index])**2 /((0.5*rb)**2))
+                mountain = mountain - aux
+
+                max_index = np.argmax(mountain)
+                center = X[max_index,:]
+                max_density = max(mountain)
+
+
+                # if center in centers:
+                #   break
+                
+                # centers = np.append(centers, center.reshape(1,-1), axis = 0)
+                
+                if center not in centers:
+                    centers = np.append(centers, center.reshape(1,-1), axis = 0)
+                else:
+                    rep_centers += 1
+                if rep_centers == 3:
+                    # print("hum")
+                    break
+                if (abs(max_density) <= tol):
+                    break
+            count += 1
+        memberships = self.get_memberships_from_centers(X, centers, distance_args)
+        return centers, memberships
+
+
+    def kmeans(self, x, k, distance_args, max_iter=100, tol=0.001):
+
+        N, _ = x.shape
+        dm = DistanceMatrices()
+        costs = []
+        initial_centers = np.random.choice(N, k, replace=False)
+        centroids = x[initial_centers, :]
+        i = 0
+        while i < max_iter:
+
+            membership_matrix = np.zeros((N, k), dtype=np.int32)
+            distance_to_clusters = dm.compute_distance_matrix_fast(x, centroids, **distance_args)
+            indices_min_dist_to_clusters = np.argmin(distance_to_clusters, axis=1)
+            
+            for j in range(N):
+                membership_matrix[j, indices_min_dist_to_clusters[j]] = 1
+
+            cost = np.sum(np.multiply(membership_matrix, distance_to_clusters))
+            costs.append(cost)
+
+            if len(costs) > 1 and abs(cost - costs[i-1]) < tol:
+                break
+
+            for c in range(k):
+                indices = membership_matrix[:, c] == 1
+                centroids[c, :] = np.mean(x[indices,:], axis=0)
+
+            i= i+1
+
+        return centroids, membership_matrix
+    
+
+    def fuzzykmeans(self, x, distance_args, N_CLUSTERS, m=2, MAX_I=100, tol=1e-3):
+        dm = DistanceMatrices()
+        
+        N, M = x.shape
+
+        fuzzy_membership = np.random.rand(N,N_CLUSTERS)
+        fuzzy_membership = fuzzy_membership / np.sum(fuzzy_membership, axis=1, keepdims=True)
+
+        i = 0
+        centers = np.zeros(shape=(N_CLUSTERS,M))
+        costs = []
+        while i < MAX_I:
+
+            denominator =  np.sum(fuzzy_membership ** m, axis = 0)
+
+            for c in range(N_CLUSTERS):
+                numerator = np.matmul(fuzzy_membership[:, c] ** m, x)
+                centers[c, :] = numerator / denominator[c]
+
+            distance_to_clusters = dm.compute_distance_matrix_fast(x, centers, **distance_args)
+            cost = np.sum( np.multiply(fuzzy_membership** m , distance_to_clusters**2))
+            costs.append(cost)
+
+            if len(costs) > 1 and abs(cost-costs[i-1]) < tol:
+                break
+
+            for p in range(N):
+                for c in range(N_CLUSTERS):
+                    div_distances = np.divide(distance_to_clusters[p,c], distance_to_clusters[p,:])
+                    fuzzy_membership[p,c] = 1 / np.sum(div_distances ** (2/(m-1)))
+
+            i = i + 1
+
+        return centers, fuzzy_membership
 
 
     def graph_clusters(self, indexes = [0,1,2]):
