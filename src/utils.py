@@ -79,13 +79,13 @@ class CreateVenv:
     def __init__(self, venv_folder = 'venv'):
         self.venv_folder = venv_folder
         self.venv_dir = os.path.join(os.getcwd(), self.venv_folder)
+        print(self.venv_dir)
         self.activate_dir = os.path.join(self.venv_dir, "Scripts", "activate.bat")
         self.pip_exe = os.path.join(self.venv_dir, "Scripts", "pip3.exe")
         self.python_exe = os.path.join(self.venv_dir, "Scripts", "python.exe")
-
-        if sys.platform == "win32":
-            self.create_venv()
-            self.activate_venv()
+        print(self.python_exe)
+        self.create_venv()
+        self.activate_venv()
 
     def create_venv(self):
         """Creates the virtual environment"""
@@ -185,7 +185,6 @@ class ReadData:
             for file in files:
                 paths.append(os.path.join(root, file))
         return paths
-
 
    
 def test():

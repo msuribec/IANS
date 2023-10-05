@@ -1,12 +1,12 @@
 from utils import ReadData
 import numpy as np
 from itertools import product
-from cluster import Cluster
+from cluster.naive import NaiveClustering
 from process import CleanData
 from distances import DistanceMatrices
 import sys
 
-def get_params_for_algortihm(distance_mat, n_intervals = 4, steps = 10, algorithms = ['neighbours', 'boxes']):
+def get_params_for_naive_algortihm(distance_mat, n_intervals = 4, steps = 10, algorithms = ['neighbours', 'boxes']):
     """Returns a dictionary with the parameters for each algorithm
     Parameters:
         distance_mat (np.array):
@@ -57,7 +57,7 @@ def get_params_for_algortihm(distance_mat, n_intervals = 4, steps = 10, algorith
 
     return algo_params
 
-def run_all_clustering_algorithms(raw_data):
+def run_all_naive_algorithms(raw_data, main_path = 'Iris'):
 
     """Runs all the clustering algorithms for the given data
     Parameters:
@@ -68,7 +68,7 @@ def run_all_clustering_algorithms(raw_data):
 
     cd = CleanData(raw_data)
     data = cd.norm_data
-    dm = DistanceMatrices()
+    dm = DistanceMatrices(main_path)
 
 
     distance_definitions = {
@@ -98,10 +98,10 @@ def run_all_clustering_algorithms(raw_data):
 
         dist_mat = dist_dictionary[dist_name]
 
-        algo_dict = get_params_for_algortihm(dist_mat)
+        algo_dict = get_params_for_naive_algortihm(dist_mat)
         for algo_name, algo_params_combinations in algo_dict.items():
             for algo_params in algo_params_combinations:
-                c = Cluster(data,dist_mat, algo_name,algo_params, dist_name)
+                c = NaiveClustering(data,dist_mat, algo_name,algo_params, dist_name, main_path)
                 c.graph_clusters()
                 c.get_membership()
                 n_sets = c.n_sets
@@ -115,5 +115,5 @@ if __name__ == '__main__':
     file_name = sys.argv.pop(1)
     data_df = reader.read_file(file_name)
     raw_data = data_df.drop(['variety'], axis=1).to_numpy()
-    run_all_clustering_algorithms(raw_data)
+    run_all_naive_algorithms(raw_data)
 

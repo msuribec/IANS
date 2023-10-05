@@ -7,7 +7,8 @@ class DistanceMatrices:
     """Class that represents a distance matrix
     """
 
-    def __init__(self):
+    def __init__(self, main_path = 'Results'):
+        self.main_path = main_path
         pass
 
     def compute_distance_matrices(self, data, distance_definitions, vertices = None):
@@ -41,7 +42,7 @@ class DistanceMatrices:
         
         Reminder: The Cosine distance is not a real distance, but a similarity measure. It is computed as 1 - cosine_similarity
         """
-        create_folders_if_not_exist(['Results', 'Results/Distance Matrices','Results/Distance to vertices', 'Results/Classifications'])
+        create_folders_if_not_exist([self.main_path, f'{self.main_path}/Distance Matrices',f'{self.main_path}/Distance to vertices', f'{self.main_path}/Classifications'])
         self.distance_matrices = {}
         self.distance_matrices_vertices = {}
         for distance_id in distance_definitions:
@@ -303,10 +304,10 @@ class DistanceMatrices:
         """
         title = f'distance matrix'
         if vertices_matrix:
-            path = f'Results/Distance to vertices/{distance.lower()}_vertices.png'
+            path = f'{self.main_path}/Distance to vertices/{distance.lower()}_vertices.png'
             title = f'distance from points to vertices'
         else:
-            path = f'Results/Distance Matrices/{distance.lower()}.png'
+            path = f'{self.main_path}/Distance Matrices/{distance.lower()}.png'
 
         self.graph_matrix(distances_matrix, title, path)
     
