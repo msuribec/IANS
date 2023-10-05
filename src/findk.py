@@ -10,13 +10,11 @@ import pandas as pd
 def get_best_model(df):
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
-    df = df.drop(columns = ['Unnamed: 0'])
     df['punctuation'] = 0
     distances = np.unique(df['Distance'].values)
     algorithms = np.unique(df['Algorithm'].values)
 
     df_comparison = df
-    num_rows = len(df_comparison)
     indices = ['CH', 'BH',  'Hartigan',  'xu',  'DB',   'S',  'Rand','Fowlkes-Mallows','Jaccard']
     are_min =   [False, True,   False,     True,  True, False,  False ,  False,            False]
     for index, is_min in zip(indices,are_min):
@@ -32,7 +30,7 @@ def get_best_model(df):
     sorted_df = df_comparison.sort_values(by=['punctuation'],ascending=[False])
     sorted_df['punctuation'] = sorted_df['punctuation']/len(indices)
 
-    best_overall = sorted_df.iloc[0]
+    best_overall = (sorted_df.iloc[0]).to_dict()
     results_algos = {}
     results_algo_dist = {}
 
@@ -43,11 +41,11 @@ def get_best_model(df):
         dict_result_algo_dist = {}
         filter = sorted_df['Algorithm']  == algo
         algo_df = sorted_df.where(filter).dropna()
-        results_algos[algo] = algo_df.iloc[0]
+        results_algos[algo] = (algo_df.iloc[0]).to_dict()
         for distance in distances:
             filter2 = algo_df['Distance']  == distance
             algo_dist_df = algo_df.where(filter2).dropna()
-            dict_result_algo_dist[distance] = algo_dist_df.iloc[0]
+            dict_result_algo_dist[distance] = (algo_dist_df.iloc[0]).to_dict()
         results_algo_dist[algo] = dict_result_algo_dist
     
     print("Best overall")
@@ -56,7 +54,10 @@ def get_best_model(df):
     print(results_algos)
     print("Best results by algorithm and distance")
     print(results_algo_dist)
-    return best_overall, results_algos, results_algo_dist
+    best_k = best_overall['Number of clusters']
+    print(best_k)
+    return best_overall, results_algos, results_algo_dist, best_k
+
 
 
 
