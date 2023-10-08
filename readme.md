@@ -2,6 +2,10 @@
 This repository contains all code necessary to run the following clustering algorithms
 - Naive boxes algorithm
 - Naive nearest K neighbours
+- Mountain clustering
+- Subtractive clustering
+- Kmeans
+- Fuzzy Cmeans
 
 ## Installation
 - Clone this repo
