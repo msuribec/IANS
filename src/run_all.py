@@ -1,6 +1,6 @@
 from run_naive import run_all_naive_algorithms
 from run_density_based import run_mountain_algorithms
-
+from runkmeans import run_kmeans_algorithms
 from process import CleanData
 from distances import DistanceMatrices
 from utils import ReadData
@@ -72,6 +72,15 @@ def run_mountain(X, Y, distance_definitions, main_path = 'Iris'):
     best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, main_path = main_path)
     return best_k
 
+def run_k_means(X, Y, distance_definitions, main_path = 'Iris'):
+
+    ns_clusters = [2,3,4]
+    ms = [2]
+
+    max_its = [100]
+    tols = [1e-3]
+
+    run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path = main_path)
 
 
 def process_data(filename):
@@ -125,5 +134,8 @@ if __name__ == '__main__':
     }
     dm = DistanceMatrices(main_path)
     dm.compute_distance_matrices(X_norm, distance_definitions)
-    run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
-    best_k = run_mountain(X_norm, Y, distance_definitions, main_path = main_path)
+
+    # run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
+    # best_k = run_mountain(X_norm, Y, dm, main_path = main_path)
+
+    run_k_means(X_norm, Y, distance_definitions, main_path = main_path)

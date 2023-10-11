@@ -7,5 +7,3 @@ def main(file_path, args = None):
 
 if __name__ == "__main__":
     main('src/run_all.py', ['Data/iris.csv' ,'Iris'])
-    # main('src/runalgos.py')
-    # main('src/runkmeans.py')
