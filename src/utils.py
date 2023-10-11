@@ -118,7 +118,7 @@ class CreateVenv:
             subprocess.run([self.python_exe,  file_path])
         else:
             print(args)
-            subprocess.run([self.python_exe,  file_path, args])
+            subprocess.run([self.python_exe,  file_path, *args])
 
 class ReadData:
     """Class that represents a reader of data.

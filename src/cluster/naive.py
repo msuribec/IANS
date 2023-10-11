@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from distances import DistanceMatrices
-
+import random
 
 class NaiveClustering:
     """Class that represents a cluster of points in a dataset obtained through naive algorithms
@@ -32,8 +32,8 @@ class NaiveClustering:
         self.clustering_args = clustering_args
 
         # Name to put in the figure titles
-        params_strs = [f'{name} = {clustering_args[name]}'for name in clustering_args]
-        self.name =  algorithm + ' with ' + distance_name + ' ' +  ','.join(params_strs)
+        self.params_strs = ','.join([f'{name} = {clustering_args[name]}'for name in clustering_args])
+        self.name =  algorithm + ' with ' + distance_name + ' ' +  self.params_strs
 
         # path where the 3d image of the clusters will be saved
         self.img_path = f'{self.main_path}/Clusters/{algorithm}/{distance_name}/clusters {self.name}.png'
@@ -102,7 +102,9 @@ class NaiveClustering:
         N = self.distance_matrix.shape[0]
 
         classified_points = set()
-        not_classified_points = set(range(N))
+        not_classified_points = list(range(N))
+        random.shuffle(not_classified_points)
+
         groups = []
 
         while len(not_classified_points) > 0:
@@ -113,15 +115,20 @@ class NaiveClustering:
 
             index_sorted_distances = np.argsort(distances)
             sorted_distances = distances[index_sorted_distances]
+
+            
             close_points = set()
             for j in range(len(sorted_distances)):
                 if sorted_distances[j] < threshold:
                     point = index_sorted_distances[j]
                     close_points.add(index_sorted_distances[point])
-                    not_classified_points.discard(point)
+                    if point in not_classified_points:
+                        not_classified_points.remove(point)
                     classified_points.add(point)
+            
+            group_i = list(close_points)
                     
-            groups.append(list(close_points))
+            groups.append(group_i)
         return groups
     
     def get_membership(self):

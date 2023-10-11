@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.linalg import inv
 
 class CleanData:
     """Class that represents a preprocessed dataset
@@ -19,6 +18,5 @@ class CleanData:
         # self.norm_data = self.data/ np.max(self.data, axis=0)
 
     def get_inv_covmat(self):
-        """Function to compute the inverse of the covariance matrix of the data"""
-        cov = np.cov(self.norm_data.T)    
-        self.inv_covmat = inv(cov)
+        """Function to compute the inverse of the covariance matrix of the data"""  
+        self.inv_covmat = np.linalg.inv(np.cov(self.norm_data, rowvar=False))

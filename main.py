@@ -6,6 +6,6 @@ def main(file_path, args = None):
     c.run_file(file_path, args) #run file
 
 if __name__ == "__main__":
-    # main('src/run_clustering.py', 'Data/iris.csv')
-    main('src/runalgos.py')
+    main('src/run_all.py', ['Data/iris.csv' ,'Iris'])
+    # main('src/runalgos.py')
     # main('src/runkmeans.py')

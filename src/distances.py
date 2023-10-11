@@ -42,7 +42,7 @@ class DistanceMatrices:
         
         Reminder: The Cosine distance is not a real distance, but a similarity measure. It is computed as 1 - cosine_similarity
         """
-        create_folders_if_not_exist([self.main_path, f'{self.main_path}/Distance Matrices',f'{self.main_path}/Distance to vertices', f'{self.main_path}/Classifications'])
+        create_folders_if_not_exist([self.main_path, f'{self.main_path}/Distance Matrices',f'{self.main_path}/Distance to vertices'])
         self.distance_matrices = {}
         self.distance_matrices_vertices = {}
         for distance_id in distance_definitions:
