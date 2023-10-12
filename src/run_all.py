@@ -56,7 +56,7 @@ def get_best_model(df, path, main_path = 'Iris'):
 
 
 
-def run_mountain(X, Y, distance_definitions, main_path = 'Iris'):
+def run_mountain(X, Y, dm, distance_definitions, main_path = 'Iris'):
 
     # sigmas = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
     # tols = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
@@ -71,7 +71,7 @@ def run_mountain(X, Y, distance_definitions, main_path = 'Iris'):
 
     path = 'Results Mountain and Subtractive.csv'
 
-    df_results = run_mountain_algorithms(X, Y, distance_definitions, [6, 11], tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
+    df_results = run_mountain_algorithms(X, Y, dm, distance_definitions, [6, 11], tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
     best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path = main_path)
     return best_k
 
@@ -143,6 +143,6 @@ if __name__ == '__main__':
     dm = DistanceMatrices(main_path)
     dm.compute_distance_matrices(X_norm, distance_definitions)
 
-    run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
+    # run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
     best_k = run_mountain(X_norm, Y, dm, distance_definitions, main_path = main_path)
-    run_k_means(X_norm, Y, distance_definitions, main_path = main_path)
+    # run_k_means(X_norm, Y, distance_definitions, main_path = main_path)
