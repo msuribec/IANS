@@ -25,12 +25,8 @@ def get_params_kmeans_algorithms(ns_clusters, ms, max_its, tols):
 
 
 def run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path = 'Iris'):
-
-
     indexes_results = []
-    internal_indexes_results = []
-    external_indexes_results = []
-    number_clusters = []
+
     #TODO: guardar en un dataframe los resultados de cada algoritmo
     # coger self.params_str
     mountain_algos_params = get_params_kmeans_algorithms(ns_clusters, ms, max_its, tols)
@@ -55,12 +51,8 @@ def run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, 
                 external_indexes = kc_val.get_all_external_indexes(Y)
 
                 print(algo_name, clustering_args, dist_name, len(kc.centers))
-                indexes_results.append((algo_name, kc.params_strs, dist_name, *internal_indexes.values() , *external_indexes.values()))
-                internal_indexes_results.append((algo_name, kc.params_strs, dist_name, *internal_indexes.values()))
-                external_indexes_results.append((algo_name, kc.params_strs, dist_name, *external_indexes.values()))
-                number_clusters.append((algo_name, kc.params_strs, dist_name, len(kc.centers)))
+                indexes_results.append((algo_name, kc.params_strs, dist_name, *internal_indexes.values() , *external_indexes.values() , len(kc.centers)) )
 
-    df_indices = pd.DataFrame(indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Rand', 'Fowlkes-Mallows', 'Jaccard'])
-    df_internal_indices = pd.DataFrame(internal_indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S'])
-    df_external_indices = pd.DataFrame(external_indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'Rand', 'Fowlkes-Mallows', 'Jaccard'])
-    df_nclusters = pd.DataFrame(number_clusters, columns= ['Algorithm', 'Parameters', 'Distance', 'Number of clusters'])
+
+    df_indices = pd.DataFrame(indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Rand', 'Fowlkes-Mallows', 'Jaccard', 'Number of clusters'])
+    return df_indices
