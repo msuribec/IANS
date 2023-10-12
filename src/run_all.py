@@ -9,7 +9,7 @@ import numpy as np
 
 
 
-def get_best_model(df, main_path = 'Iris'):
+def get_best_model(df, path, main_path = 'Iris'):
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
     df['punctuation'] = 0
@@ -51,7 +51,7 @@ def get_best_model(df, main_path = 'Iris'):
         results_algo_dist[algo] = dict_result_algo_dist
     
     best_k = best_overall['Number of clusters']
-    sorted_df.to_csv(f'{main_path}/Results Mountain and Subtractive.csv')
+    sorted_df.to_csv(f'{main_path}/{path}')
     return best_k, best_overall, results_algos, results_algo_dist
 
 
@@ -68,8 +68,11 @@ def run_mountain(X, Y, distance_definitions, main_path = 'Iris'):
 
     ras = [0.1,0.2]
 
+
+    path = 'Results Mountain and Subtractive.csv'
+
     df_results = run_mountain_algorithms(X, Y, distance_definitions, [6, 11], tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
-    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, main_path = main_path)
+    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path = main_path)
     return best_k
 
 def run_k_means(X, Y, distance_definitions, main_path = 'Iris'):
@@ -80,7 +83,12 @@ def run_k_means(X, Y, distance_definitions, main_path = 'Iris'):
     max_its = [100]
     tols = [1e-3]
 
-    run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path = main_path)
+    path = 'Results Kmeans and FuzzyCmeans.csv'
+
+    df_results = run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path)
+    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path)
+    return best_k
+
 
 
 def process_data(filename):
@@ -135,7 +143,6 @@ if __name__ == '__main__':
     dm = DistanceMatrices(main_path)
     dm.compute_distance_matrices(X_norm, distance_definitions)
 
-    # run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
-    # best_k = run_mountain(X_norm, Y, dm, main_path = main_path)
-
+    run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
+    best_k = run_mountain(X_norm, Y, dm, distance_definitions, main_path = main_path)
     run_k_means(X_norm, Y, distance_definitions, main_path = main_path)
