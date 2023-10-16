@@ -138,11 +138,13 @@ class KmeansCluster:
         ax = fig.add_subplot(111, projection='3d')
 
 
+        members = np.max(self.memberships, axis=0)
+
         groups = []
         for c in range(self.memberships.shape[0]):
             group_c = []
             for p in range(self.memberships.shape[1]):
-                if self.memberships[c,p] == 1:
+                if self.memberships[c,p] == members[p]:
                     group_c.append(p)
             groups.append(group_c)
 

@@ -65,7 +65,7 @@ def get_vertices_grid(len_grid,M):
     vertices = np.array(vertices)
     return vertices
 
-def run_mountain_algorithms(X, Y, dm, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = 'Iris'):
+def run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = 'Iris'):
 
     #TODO: guardar en un dataframe los resultados de cada algoritmo
     # coger self.params_str

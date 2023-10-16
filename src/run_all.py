@@ -7,6 +7,7 @@ from utils import ReadData
 import sys
 import numpy as np
 
+from cluster.kmeans import KmeansCluster
 
 
 def get_best_model(df, path, main_path = 'Iris'):
@@ -70,7 +71,6 @@ def run_mountain(X, Y, dm, distance_definitions, main_path = 'Iris'):
 
 
     path = 'Results Mountain and Subtractive.csv'
-
     df_results = run_mountain_algorithms(X, Y, dm, distance_definitions, [6, 11], tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
     best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path = main_path)
     return best_k
@@ -143,6 +143,10 @@ if __name__ == '__main__':
     dm = DistanceMatrices(main_path)
     dm.compute_distance_matrices(X_norm, distance_definitions)
 
-    # run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
+    # kc = KmeansCluster(X_norm, 'fuzzycmeans', {'k': 3}, distance_definitions['Cosine'], 'Cosine', main_path = 'Otro')
+    # kc.cluster()
+    # kc.save_results()
+
+    run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
     best_k = run_mountain(X_norm, Y, dm, distance_definitions, main_path = main_path)
-    # run_k_means(X_norm, Y, distance_definitions, main_path = main_path)
+    run_k_means(X_norm, Y, distance_definitions, main_path = main_path)
