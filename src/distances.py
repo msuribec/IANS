@@ -1,6 +1,7 @@
 from utils import create_folders_if_not_exist
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.spatial import distance
  
 
 class DistanceMatrices:
@@ -110,7 +111,9 @@ class DistanceMatrices:
             assert p is not None, "p must be specified when using p_distance"
             return np.sum((V-v1)**2, axis = 1)
         elif distance_name == 'Mahalanobis':
-            dist_v1v2 = np.sqrt(np.diag((V-v1) @ inv_covmat @ (V-v1).T))
+            # Memory efficient
+            dist_v1v2 =  distance.cdist(V, v1.reshape(1,-1), 'mahalanobis', VI=inv_covmat)
+            dist_v1v2 = dist_v1v2.reshape(V.shape[0],)
         elif distance_name == 'Cosine':
             norm_V = np.sqrt(np.sum(V**2, axis = 1))
             norm_v1 = np.sqrt(np.sum(v1**2))

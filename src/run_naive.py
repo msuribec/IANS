@@ -149,7 +149,7 @@ def run_all_naive_algorithms(data, dm, main_path = 'Iris'):
     
     df_results = pd.DataFrame(results_overall, columns = ['Algorithm', 'Distance', 'Parameters', 'Number of clusters'])
     df_results.to_csv(f'{main_path}/ParameterExploration/Results Naive.csv', index = False)
-    plot_naive_results(results_neighbours, results_boxes, main_path = 'Iris')
+    plot_naive_results(results_neighbours, results_boxes, main_path = main_path)
                     
 
 

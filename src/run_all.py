@@ -6,11 +6,11 @@ from distances import DistanceMatrices
 from utils import ReadData
 import sys
 import numpy as np
+from autoencoder import find_best_low_high_dimension_data
 
-from cluster.kmeans import KmeansCluster
 
 
-def get_best_model(df, path, main_path = 'Iris'):
+def get_best_model(df, path, main_path):
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
     df['punctuation'] = 0
@@ -48,7 +48,8 @@ def get_best_model(df, path, main_path = 'Iris'):
         for distance in distances:
             filter2 = algo_df['Distance']  == distance
             algo_dist_df = algo_df.where(filter2).dropna()
-            dict_result_algo_dist[distance] = algo_dist_df.iloc[0].to_dict()
+            if len(algo_dist_df) != 0:
+                dict_result_algo_dist[distance] = algo_dist_df.iloc[0].to_dict()
         results_algo_dist[algo] = dict_result_algo_dist
     
     best_k = best_overall['Number of clusters']
@@ -56,28 +57,35 @@ def get_best_model(df, path, main_path = 'Iris'):
     return best_k, best_overall, results_algos, results_algo_dist
 
 
-
-def run_mountain(X, Y, dm, distance_definitions, main_path = 'Iris'):
+def run_mountain(X, Y, dm, distance_definitions, main_path):
 
     sigmas = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
     tols = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
 
     ras = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
 
-    # sigmas = [0.1,0.2]
-    # tols = [0.5,0.6]
+    # sigmas = [0.1, 0.2]
+    # tols = [0.1]
 
-    # ras = [0.1,0.2]
+    # ras = [0.1]
 
+    # if X.shapeq[1] > 4:
+    #     grid_points = [6, 11]
+    # else:
+    #     grid_points = [6, 11]
+
+    grid_points = [6, 11]
 
     path = 'Results Mountain and Subtractive.csv'
-    df_results = run_mountain_algorithms(X, Y, dm, distance_definitions, [6, 11], tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
+    df_results = run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
+    print(df_results)
     best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path = main_path)
     return best_k
 
-def run_k_means(X, Y, distance_definitions, main_path = 'Iris'):
 
-    ns_clusters = [2,3,4]
+def run_k_means(X, Y, ns_clusters, distance_definitions, main_path):
+
+
     ms = [2]
 
     max_its = [100]
@@ -88,7 +96,6 @@ def run_k_means(X, Y, distance_definitions, main_path = 'Iris'):
     df_results = run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path)
     best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path)
     return best_k
-
 
 
 def process_data(filename):
@@ -113,13 +120,32 @@ def process_data(filename):
 
     return X_norm, Y, inv_covmat
 
+
+def run_all(X, Y, ns_clusters, distance_definitions, main_path):
+    dm = DistanceMatrices(main_path)
+    dm.compute_distance_matrices(X, distance_definitions)
+
+    # run_all_naive_algorithms(X, dm,  main_path= main_path)
+    best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
+    # run_k_means(X, Y, ns_clusters, distance_definitions, main_path = main_path)
+
+
+
 if __name__ == '__main__':
 
     file_name = sys.argv.pop(1)
     main_path = sys.argv.pop(1)
+    list_ks = sys.argv.pop(1)
+    dimension = sys.argv.pop(1)
 
 
+    list_ks = list_ks.split(',')
+    ns_clusters = [int(k) for k in list_ks]
     X_norm, Y, inv_covmat = process_data(file_name)
+
+    if dimension == 'low' or dimension == 'high':
+        X_norm = find_best_low_high_dimension_data(dimension, X_norm, Y)
+        inv_covmat = np.linalg.inv(np.cov(X_norm, rowvar=False))
 
     distance_definitions = {
         'Euclidean': {
@@ -140,13 +166,5 @@ if __name__ == '__main__':
             'distance_name': 'Cosine',
         }
     }
-    dm = DistanceMatrices(main_path)
-    dm.compute_distance_matrices(X_norm, distance_definitions)
 
-    # kc = KmeansCluster(X_norm, 'fuzzycmeans', {'k': 3}, distance_definitions['Cosine'], 'Cosine', main_path = 'Otro')
-    # kc.cluster()
-    # kc.save_results()
-
-    run_all_naive_algorithms(X_norm,dm,  main_path= main_path)
-    best_k = run_mountain(X_norm, Y, dm, distance_definitions, main_path = main_path)
-    run_k_means(X_norm, Y, distance_definitions, main_path = main_path)
+    run_all(X_norm, Y, ns_clusters, distance_definitions, main_path = main_path)
