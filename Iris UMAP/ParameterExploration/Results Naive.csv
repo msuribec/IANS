@@ -14,7 +14,7 @@ neighbours,Euclidean,k = 120,2
 neighbours,Euclidean,k = 130,2
 neighbours,Euclidean,k = 140,2
 boxes,Euclidean,threshold = 3.7129533290863037,4
-boxes,Euclidean,threshold = 7.425906658172607,3
+boxes,Euclidean,threshold = 7.425906658172607,2
 boxes,Euclidean,threshold = 11.138859987258911,2
 neighbours,Manhattan,k = 10,27
 neighbours,Manhattan,k = 20,15
@@ -32,7 +32,7 @@ neighbours,Manhattan,k = 130,2
 neighbours,Manhattan,k = 140,2
 boxes,Manhattan,threshold = 4.880372047424316,4
 boxes,Manhattan,threshold = 9.760744094848633,2
-boxes,Manhattan,threshold = 14.64111614227295,2
+boxes,Manhattan,threshold = 14.64111614227295,1
 neighbours,Minkowski with p = 3,k = 10,27
 neighbours,Minkowski with p = 3,k = 20,14
 neighbours,Minkowski with p = 3,k = 30,8
@@ -48,7 +48,7 @@ neighbours,Minkowski with p = 3,k = 120,2
 neighbours,Minkowski with p = 3,k = 130,2
 neighbours,Minkowski with p = 3,k = 140,2
 boxes,Minkowski with p = 3,threshold = 55.14408874511719,2
-boxes,Minkowski with p = 3,threshold = 110.28817749023438,2
+boxes,Minkowski with p = 3,threshold = 110.28817749023438,1
 boxes,Minkowski with p = 3,threshold = 165.43226623535156,2
 neighbours,Mahalanobis,k = 10,27
 neighbours,Mahalanobis,k = 20,13
@@ -64,7 +64,7 @@ neighbours,Mahalanobis,k = 110,3
 neighbours,Mahalanobis,k = 120,3
 neighbours,Mahalanobis,k = 130,2
 neighbours,Mahalanobis,k = 140,2
-boxes,Mahalanobis,threshold = 0.9982278103880616,5
+boxes,Mahalanobis,threshold = 0.9982278103880616,7
 boxes,Mahalanobis,threshold = 1.9964556207761233,3
 boxes,Mahalanobis,threshold = 2.994683431164185,1
 neighbours,Cosine,k = 10,26
@@ -82,5 +82,5 @@ neighbours,Cosine,k = 120,2
 neighbours,Cosine,k = 130,2
 neighbours,Cosine,k = 140,2
 boxes,Cosine,threshold = 0.11125439405441284,2
-boxes,Cosine,threshold = 0.22250890731811523,2
+boxes,Cosine,threshold = 0.22250890731811523,1
 boxes,Cosine,threshold = 0.3337634205818176,1

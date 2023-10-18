@@ -2,7 +2,6 @@ from distances import DistanceMatrices
 from itertools import product
 from cluster.mountain import MountainClustering
 import numpy as np
-from sklearn import datasets
 from cluster.validation import Validation
 import pandas as pd
 
