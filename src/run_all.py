@@ -7,8 +7,8 @@ from utils import ReadData
 import sys
 import numpy as np
 from autoencoder import find_best_low_high_dimension_data
-
-
+from embedding import UMAP_EMBEDDING
+import ast
 
 def get_best_model(df, path, main_path):
     df = df.replace([np.inf, -np.inf], np.nan)
@@ -64,16 +64,6 @@ def run_mountain(X, Y, dm, distance_definitions, main_path):
 
     ras = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
 
-    # sigmas = [0.1, 0.2]
-    # tols = [0.1]
-
-    # ras = [0.1]
-
-    # if X.shapeq[1] > 4:
-    #     grid_points = [6, 11]
-    # else:
-    #     grid_points = [6, 11]
-
     grid_points = [6, 11]
 
     path = 'Results Mountain and Subtractive.csv'
@@ -125,8 +115,8 @@ def run_all(X, Y, ns_clusters, distance_definitions, main_path):
     dm = DistanceMatrices(main_path)
     dm.compute_distance_matrices(X, distance_definitions)
 
-    run_all_naive_algorithms(X, dm,  main_path= main_path)
-    # best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
+    # run_all_naive_algorithms(X, dm,  main_path= main_path)
+    best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
     # run_k_means(X, Y, ns_clusters, distance_definitions, main_path = main_path)
 
 
@@ -136,15 +126,19 @@ if __name__ == '__main__':
     file_name = sys.argv.pop(1)
     main_path = sys.argv.pop(1)
     list_ks = sys.argv.pop(1)
-    dimension = sys.argv.pop(1)
-
+    type= sys.argv.pop(1)
 
     list_ks = list_ks.split(',')
     ns_clusters = [int(k) for k in list_ks]
     X_norm, Y, inv_covmat = process_data(file_name)
 
-    if dimension == 'low' or dimension == 'high':
-        X_norm = find_best_low_high_dimension_data(dimension, X_norm, Y)
+    if type == 'low' or type == 'high':
+        X_norm = find_best_low_high_dimension_data(type, X_norm, Y)
+        inv_covmat = np.linalg.inv(np.cov(X_norm, rowvar=False))
+    elif type == 'umap':
+        umap_args = ast.literal_eval(sys.argv.pop(1))
+        #{'n_neighbors': 15, 'min_dist': 0.3, 'n_components': 2, "metric":'euclidean'}
+        X_norm = UMAP_EMBEDDING(X_norm, umap_args).get_embedded_data()
         inv_covmat = np.linalg.inv(np.cov(X_norm, rowvar=False))
 
     distance_definitions = {

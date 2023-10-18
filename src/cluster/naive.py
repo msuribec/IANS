@@ -164,12 +164,47 @@ class NaiveClustering:
 
         M = self.data.shape[1]
 
-        assert M >= 3, "Data must have 3 dimensions at least"
+        
         assert len(indexes) == 3, "Only pass the indexes of 3 features to graph"
 
+        if M == 2:
+            self.graph_cluster_2d(indexes)
+        else:
+
+            fig = plt.figure(figsize = (10, 10))
+            ax = fig.add_subplot(111, projection='3d')
+
+            colors = list(getDistinctColors(len(self.groups)))
+
+            for i,group in enumerate(self.groups):
+
+                data_group = self.data[group, :]
+                    
+                x = data_group[:, indexes[0]]
+                y = data_group[:, indexes[1]]
+                z = data_group[:, indexes[2]]
+
+                alts = np.array([1.2] * len(group))
+
+                ax.scatter(x,y,z, s=alts * 5, color = [colors[i]], cmap = None, depthshade=False, label=("Cluster " + str(i + 1)))
+
+            plt.title('clusters ' + self.name)
+            if len(self.groups) > 5:
+                plt.legend(numpoints=1 , bbox_to_anchor=(1.1, 1.05))
+            else:
+                plt.legend(numpoints=1 , loc='best')
+            plt.savefig(self.img_path)
+            plt.close()
+
+
+    def graph_cluster_2d(self, indexes = [0,1]):
+
+        M = self.data.shape[1]
+
+        assert M == 2, "Data must have 2 dimensions at least"
 
         fig = plt.figure(figsize = (10, 10))
-        ax = fig.add_subplot(111, projection='3d')
+        ax = fig.add_subplot(111)
 
         colors = list(getDistinctColors(len(self.groups)))
 
@@ -179,11 +214,10 @@ class NaiveClustering:
                 
             x = data_group[:, indexes[0]]
             y = data_group[:, indexes[1]]
-            z = data_group[:, indexes[2]]
 
             alts = np.array([1.2] * len(group))
 
-            ax.scatter(x,y,z, s=alts * 5, color = [colors[i]], cmap = None, depthshade=False, label=("Cluster " + str(i + 1)))
+            ax.scatter(x,y, s=alts * 5, color = [colors[i]], cmap = None, label=("Cluster " + str(i + 1)))
 
         plt.title('clusters ' + self.name)
         if len(self.groups) > 5:
@@ -192,4 +226,3 @@ class NaiveClustering:
             plt.legend(numpoints=1 , loc='best')
         plt.savefig(self.img_path)
         plt.close()
-

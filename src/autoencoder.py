@@ -1,9 +1,6 @@
 import tensorflow as tf
 from matplotlib import pyplot as plt
 import numpy as np
-import pandas as pd
-from sklearn.datasets import load_iris
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 
 class Autoencoder:
@@ -131,32 +128,3 @@ def find_best_low_high_dimension_data(dimension, X_norm, Y, RANDOM_SEED = 42):
         return find_best_autoencoder_loW(X_norm,M, X_train, X_val,  X_test)
     elif dimension == 'high':
         return find_best_autoencoder_high(X_norm,M, X_train, X_val,  X_test)
-
-
-if __name__ == "__main__":
-
-    RANDOM_SEED = 42
-    np.random.seed(RANDOM_SEED)
-
-    iris = load_iris()
-    X = iris.data
-    Y = iris.target
-
-    print(Y)
-    target_names = iris.target_names
-    scaler = MinMaxScaler()
-
-    X_scaled = scaler.fit_transform(X)
-
-    X_train, X_tv, Y_train, Y_tv = train_test_split(X_scaled, Y, test_size=0.4, random_state=RANDOM_SEED)
-    X_test, X_val, Y_test, Y_val = train_test_split(X_tv, Y_tv, test_size=0.5, random_state=RANDOM_SEED)
-
-    M = X.shape[1]
-
-    best_low_dimension_data = find_best_autoencoder_loW(M, X_train, X_val,  X_test)
-    best_high_dimension_data = find_best_autoencoder_high(M, X_train, X_val,  X_test)
-
-    print(best_high_dimension_data)
-    # a.plot_history()
-
-    # a.plot_clusters(a.encoded_data, Y_train, target_names, 'Encoded data latent-space', 'dimension ')

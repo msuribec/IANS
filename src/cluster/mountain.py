@@ -155,6 +155,15 @@ class MountainClustering:
         df = pd.DataFrame(self.memberships)
         df.to_csv(self.memership_mat_path)
 
+    def get_groups(self):
+        groups = []
+        for c in range(self.memberships.shape[0]):
+            group_c = []
+            for p in range(self.memberships.shape[1]):
+                if self.memberships[c,p] == 1:
+                    group_c.append(p)
+            groups.append(group_c)
+        return groups
 
     def graph_clusters(self, indexes = [0,1,2]):
         """Graphs the clusters in a 3d plot and saves it to the path specified in the constructor.
@@ -164,46 +173,73 @@ class MountainClustering:
                 list of indexes of the features to graph. Must be of length 3
             
         """
-
         M = self.data.shape[1]
 
-        assert M >= 3, "Data must have 3 dimensions at least"
+        
         assert len(indexes) == 3, "Only pass the indexes of 3 features to graph"
 
+        if M == 2:
+            self.graph_cluster_2d(indexes)
+        else:
+
+            fig = plt.figure(figsize = (10, 10))
+            ax = fig.add_subplot(111, projection='3d')
+
+
+            self.groups = self.get_groups()
+
+
+            colors = list(getDistinctColors(len(self.groups)))
+
+            for i,group in enumerate(self.groups):
+
+                data_group = self.data[group, :]
+                    
+                x = data_group[:, indexes[0]]
+                y = data_group[:, indexes[1]]
+                z = data_group[:, indexes[2]]
+
+                alts = np.array([1.2] * len(group))
+
+                ax.scatter(x,y,z, s=alts * 5, color = [colors[i]], cmap = None, depthshade=False, label=("Cluster " + str(i + 1)))
+
+            plt.title('clusters ' + self.name)
+            if len(self.groups) > 5:
+                plt.legend(numpoints=1 , bbox_to_anchor=(1.1, 1.05))
+            else:
+                plt.legend(numpoints=1 , loc='best')
+            plt.savefig(self.img_path)
+            plt.close()
+
+
+    def graph_cluster_2d(self, indexes = [0,1]):
+    
+        M = self.data.shape[1]
+
+        assert M == 2, "Data must have 2 dimensions at least"
+
+        self.groups = self.get_groups()
 
         fig = plt.figure(figsize = (10, 10))
-        ax = fig.add_subplot(111, projection='3d')
+        ax = fig.add_subplot(111)
 
+        colors = list(getDistinctColors(len(self.groups)))
 
-        groups = []
-        for c in range(self.memberships.shape[0]):
-            group_c = []
-            for p in range(self.memberships.shape[1]):
-                if self.memberships[c,p] == 1:
-                    group_c.append(p)
-            groups.append(group_c)
-
-
-        colors = list(getDistinctColors(len(groups)))
-
-        for i,group in enumerate(groups):
+        for i,group in enumerate(self.groups):
 
             data_group = self.data[group, :]
                 
             x = data_group[:, indexes[0]]
             y = data_group[:, indexes[1]]
-            z = data_group[:, indexes[2]]
 
             alts = np.array([1.2] * len(group))
 
-            ax.scatter(x,y,z, s=alts * 5, color = [colors[i]], cmap = None, depthshade=False, label=("Cluster " + str(i + 1)))
+            ax.scatter(x,y, s=alts * 5, color = [colors[i]], cmap = None, label=("Cluster " + str(i + 1)))
 
         plt.title('clusters ' + self.name)
-        if len(groups) > 5:
+        if len(self.groups) > 5:
             plt.legend(numpoints=1 , bbox_to_anchor=(1.1, 1.05))
         else:
             plt.legend(numpoints=1 , loc='best')
         plt.savefig(self.img_path)
         plt.close()
-
-

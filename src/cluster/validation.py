@@ -211,12 +211,12 @@ class Validation:
                     else:
                         TN += 1
         
-        prec =  TP / (TP + FP)
-        recall = TP / (TP + FN)
+        prec = self.try_divide(TP,TP + FP)
+        recall = self.try_divide(TP,TP + FN)
 
-        self.rand_index = (TP + TN) / len(combinations)
+        self.rand_index = self.try_divide(TP + TN,len(combinations))
         self.fowlkes_mallows_index = np.sqrt(prec * recall)
-        self.jaccard_index = TP / (TP + FP + FN)
+        self.jaccard_index = self.try_divide(TP ,(TP + FP + FN))
 
         external_indexes = {
             "Rand": self.rand_index,
@@ -224,3 +224,9 @@ class Validation:
             "Jaccard": self.jaccard_index
         }
         return external_indexes
+    
+    def try_divide(self,num,div):
+        if div == 0:
+            return np.inf
+        else:
+            return num/div

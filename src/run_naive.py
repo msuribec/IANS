@@ -103,7 +103,6 @@ def plot_naive_results(neighbours_results, boxes_results, main_path = 'Iris'):
 
 
 
-# TODO: no hacer clean acaá
 def run_all_naive_algorithms(data, dm, main_path = 'Iris'):
 
     """Runs all the clustering algorithms for the given data
