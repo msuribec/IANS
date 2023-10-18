@@ -64,7 +64,7 @@ def run_mountain(X, Y, dm, distance_definitions, main_path):
 
     ras = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
 
-    grid_points = [6, 11]
+    grid_points = [11]
 
     path = 'Results Mountain and Subtractive.csv'
     df_results = run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
