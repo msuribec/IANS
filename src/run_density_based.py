@@ -64,10 +64,8 @@ def get_vertices_grid(len_grid,M):
     vertices = np.array(vertices)
     return vertices
 
-def run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = 'Iris'):
+def run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = 'Iris', include_external = True):
 
-    #TODO: guardar en un dataframe los resultados de cada algoritmo
-    # coger self.params_str
     mountain_algos_params = get_params_mountain_algorithms(tols, sigmas, ras, betas = betas, rbs=rbs)
 
 
@@ -80,9 +78,6 @@ def run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, s
         grids[gp] = grid
 
     indexes_results = []
-    internal_indexes_results = []
-    external_indexes_results = []
-    number_clusters = []
 
     for dist_id in dist_dictionary:
 
@@ -107,26 +102,19 @@ def run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, s
                         mc = MountainClustering(X, algo_name, clustering_args, dist_args, dist_name, distance_mat_v = distance_mat_v, grid=grid, grid_points = gp, main_path = main_path)
                         mc.cluster()
                         mc.save_results()
-
                         print(algo_name, clustering_args, dist_name, gp, len(mc.centers))
-                        #TODO SAVE RESULTS
-                        #TODO GRAPH RESULTS
                 kc_val = Validation(mc.memberships, X, dist_args, centroids = mc.centers)
-
                 internal_indexes = kc_val.get_all_internal_indexes()
-                external_indexes = kc_val.get_all_external_indexes(Y)
-
-
-                indexes_results.append((algo_name, mc.params_strs, dist_name, *internal_indexes.values() , *external_indexes.values(), len(mc.centers)))
-                internal_indexes_results.append((algo_name, mc.params_strs, dist_name, *internal_indexes.values()))
-                external_indexes_results.append((algo_name, mc.params_strs, dist_name, *external_indexes.values()))
-                number_clusters.append((algo_name, mc.params_strs, dist_name, len(mc.centers)))
-
-    df_indices = pd.DataFrame(indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Rand', 'Fowlkes-Mallows', 'Jaccard', 'Number of clusters'])
-    df_internal_indices = pd.DataFrame(internal_indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S'])
-    df_external_indices = pd.DataFrame(external_indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'Rand', 'Fowlkes-Mallows', 'Jaccard'])
-    df_nclusters = pd.DataFrame(number_clusters, columns= ['Algorithm', 'Parameters', 'Distance', 'Number of clusters'])
-
+                if include_external:
+                    external_indexes = kc_val.get_all_external_indexes(Y)
+                    indexes_results.append((algo_name, mc.params_strs, dist_name, *internal_indexes.values() , *external_indexes.values(), len(mc.centers)))
+                else:
+                    indexes_results.append((algo_name, mc.params_strs, dist_name, *internal_indexes.values() , len(mc.centers)))
+    
+    if include_external:  
+        df_indices = pd.DataFrame(indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Rand', 'Fowlkes-Mallows', 'Jaccard', 'Number of clusters'])
+    else:
+        df_indices = pd.DataFrame(indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Number of clusters'])
     return df_indices
 
 

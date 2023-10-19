@@ -4,13 +4,15 @@ from runkmeans import run_kmeans_algorithms
 from process import CleanData
 from distances import DistanceMatrices
 from utils import ReadData
+from process import process_data
 import sys
 import numpy as np
 from autoencoder import find_best_low_high_dimension_data
 from embedding import UMAP_EMBEDDING
 import ast
 
-def get_best_model(df, path, main_path):
+
+def get_best_model(df, path, main_path, include_external = True):
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
     df['punctuation'] = 0
@@ -18,8 +20,12 @@ def get_best_model(df, path, main_path):
     algorithms = np.unique(df['Algorithm'].values)
 
     df_comparison = df
-    indices = ['CH', 'BH',  'Hartigan',  'xu',  'DB',   'S',  'Rand','Fowlkes-Mallows','Jaccard']
-    are_min =   [False, True,   False,     True,  True, False,  False ,  False,            False]
+    if include_external:
+        indices = ['CH', 'BH',  'Hartigan',  'xu',  'DB',   'S',  'Rand','Fowlkes-Mallows','Jaccard']
+        are_min =   [False, True,   False,     True,  True, False,  False ,  False,            False]
+    else:
+        indices = ['CH', 'BH',  'Hartigan',  'xu',  'DB',   'S']
+        are_min =   [False, True,   False,     True,  True, False]        
     for index, is_min in zip(indices,are_min):
     
         sorted_df = df_comparison.sort_values(by=[index],ascending=is_min)
@@ -88,35 +94,12 @@ def run_k_means(X, Y, ns_clusters, distance_definitions, main_path):
     return best_k
 
 
-def process_data(filename):
-
-    reader = ReadData()
-    
-    data_df = reader.read_file(file_name)
-    X = data_df.drop(['target'], axis=1).to_numpy()
-    N, M = X.shape
-    target_values = data_df['target'].values
-    unique_classes = np.unique(target_values)
-    n_classes = len(unique_classes)
-    Y = np.zeros(N, dtype=np.int32)
-    for i,target in enumerate(target_values):
-        for j in range(n_classes):
-            if target == unique_classes[j]:
-                Y[i] = j
-    
-    cd = CleanData(X)
-    X_norm = cd.norm_data
-    inv_covmat = cd.inv_covmat
-
-    return X_norm, Y, inv_covmat
-
-
 def run_all(X, Y, ns_clusters, distance_definitions, main_path):
     dm = DistanceMatrices(main_path)
     dm.compute_distance_matrices(X, distance_definitions)
 
     run_all_naive_algorithms(X, dm,  main_path= main_path)
-    # best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
+    best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
     run_k_means(X, Y, ns_clusters, distance_definitions, main_path = main_path)
 
 

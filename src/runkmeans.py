@@ -4,7 +4,6 @@ from itertools import product
 from cluster.mountain import MountainClustering
 import numpy as np
 from cluster.validation import Validation
-from sklearn import datasets
 import pandas as pd
 
 def get_params_kmeans_algorithms(ns_clusters, ms, max_its, tols):
@@ -24,7 +23,7 @@ def get_params_kmeans_algorithms(ns_clusters, ms, max_its, tols):
 
 
 
-def run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path = 'Iris'):
+def run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path = 'Iris', include_external = True):
     indexes_results = []
 
     #TODO: guardar en un dataframe los resultados de cada algoritmo
@@ -48,11 +47,18 @@ def run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, 
                 kc_val = Validation(kc.memberships, X, dist_args, centroids = kc.centers)
 
                 internal_indexes = kc_val.get_all_internal_indexes()
-                external_indexes = kc_val.get_all_external_indexes(Y)
+                if include_external:
+                    external_indexes = kc_val.get_all_external_indexes(Y)
 
                 print(algo_name, clustering_args, dist_name, len(kc.centers))
-                indexes_results.append((algo_name, kc.params_strs, dist_name, *internal_indexes.values() , *external_indexes.values() , len(kc.centers)) )
+                if include_external:
+                    indexes_results.append((algo_name, kc.params_strs, dist_name, *internal_indexes.values() , *external_indexes.values() , len(kc.centers)) )
+                else:
+                    indexes_results.append((algo_name, kc.params_strs, dist_name, *internal_indexes.values() , len(kc.centers)) )
 
-
-    df_indices = pd.DataFrame(indexes_results, columns= ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Rand', 'Fowlkes-Mallows', 'Jaccard', 'Number of clusters'])
+    if include_external:
+        indices_cols = ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Rand', 'Fowlkes-Mallows', 'Jaccard', 'Number of clusters']
+    else:
+        indices_cols = ['Algorithm', 'Parameters', 'Distance', 'CH', 'BH', 'Hartigan', 'xu', 'DB', 'S', 'Number of clusters']
+    df_indices = pd.DataFrame(indexes_results, columns= indices_cols)
     return df_indices

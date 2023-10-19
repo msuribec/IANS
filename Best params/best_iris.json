@@ -1,0 +1,98 @@
+{
+    "subtractive": {
+        "all": {
+            "name": "Best subtractive in all validation",
+            "dist_args": {
+                "distance_name": "Cosine"
+            },
+            "clustering_args": {
+                "ra": 0.3,
+                "tol": 0.6
+            }
+        },
+        "external": {
+            "name": "Best subtractive in external validation",
+            "dist_args": {
+                "distance_name": "Euclidean"
+            },
+            "clustering_args": {
+                "ra": 0.1,
+                "tol": 0.5
+            }
+        }
+    },
+    "mountain": {
+        "all": {
+            "name": "Best mountain in all validation",
+            "dist_args": {
+                "distance_name": "Cosine"
+            },
+            "clustering_args": {
+                "sigma": 0.1,
+                "tol": 0.6,
+                "gridp": 11
+            }
+        },
+        "external": {
+            "name": "Best mountain in external validation",
+            "dist_args": {
+                "distance_name": "Manhattan"
+            },
+            "clustering_args": {
+                "sigma": 0.6,
+                "tol": 0.4,
+                "gridp": 11
+            }
+        }
+    },
+    "kmeans": {
+        "all": {
+            "name": "Best kmeans in all validation",
+            "dist_args": {
+                "distance_name": "Cosine"
+            },
+            "clustering_args": {
+                "k": 2,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        },
+        "external": {
+            "name": "Best kmeans in external validation",
+            "dist_args": {
+                "distance_name": "Euclidean"
+            },
+            "clustering_args": {
+                "k": 3,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        }
+    },
+    "fuzzycmeans": {
+        "all": {
+            "name": "Best fuzzycmeans in all validation",
+            "dist_args": {
+                "distance_name": "Mahalanobis"
+            },
+            "clustering_args": {
+                "k": 2,
+                "m": 2,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        },
+        "external": {
+            "name": "Best fuzzycmeans in external validation",
+            "dist_args": {
+                "distance_name": "Euclidean"
+            },
+            "clustering_args": {
+                "k": 3,
+                "m": 2,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        }
+    }
+}
