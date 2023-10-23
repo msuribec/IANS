@@ -73,9 +73,14 @@ def run_mountain(X, Y, dm, distance_definitions, main_path):
     grid_points = [11]
 
     path = 'Results Mountain and Subtractive.csv'
-    df_results = run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = main_path)
+
+
+    got_labels = Y is not None
+
+
+    df_results = run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = main_path, include_external = got_labels)
     print(df_results)
-    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path = main_path)
+    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path = main_path, include_external = got_labels)
     return best_k
 
 
@@ -89,8 +94,10 @@ def run_k_means(X, Y, ns_clusters, distance_definitions, main_path):
 
     path = 'Results Kmeans and FuzzyCmeans.csv'
 
-    df_results = run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path)
-    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path)
+    got_labels = Y is not None
+
+    df_results = run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path, include_external = got_labels)
+    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path, include_external = got_labels)
     return best_k
 
 
@@ -115,8 +122,9 @@ if __name__ == '__main__':
     ns_clusters = [int(k) for k in list_ks]
     X_norm, Y, inv_covmat = process_data(file_name)
 
+
     if type == 'low' or type == 'high':
-        X_norm = find_best_low_high_dimension_data(type, X_norm, Y)
+        X_norm = find_best_low_high_dimension_data(type, X_norm)
         inv_covmat = np.linalg.inv(np.cov(X_norm, rowvar=False))
     elif type == 'umap':
         umap_args = ast.literal_eval(sys.argv.pop(1))

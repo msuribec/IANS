@@ -20,8 +20,8 @@ def clean_dataframe(df, columns_econde = None):
         Cleaned dataframe
     """
     df = df.dropna()
-    if columns_econde is not None:
-        df = pd.get_dummies(df, columns=columns_econde)
+    if columns_econde is not None and len(columns_econde) != 0:
+        df = pd.get_dummies(df, columns=columns_econde, dtype=float)
     return df
 
 def create_folders_if_not_exist(folder_paths):

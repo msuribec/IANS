@@ -103,6 +103,8 @@ if __name__ == '__main__':
 
     X_norm, Y, inv_covmat = process_data(file_name)
 
+    got_labels = Y is not None
+
     if type == 'low' or type == 'high':
         X_norm = find_best_low_high_dimension_data(type, X_norm, Y)
         inv_covmat = np.linalg.inv(np.cov(X_norm, rowvar=False))
@@ -126,9 +128,9 @@ if __name__ == '__main__':
 
             if algo_name in ['mountain', 'subtractive']:
 
-                predictions, all_indexes = run_best_mountain(X_norm, Y, algo_name, clustering_args, dist_args ,main_path, include_external = True)
+                predictions, all_indexes = run_best_mountain(X_norm, Y, algo_name, clustering_args, dist_args ,main_path, include_external = got_labels)
             else:
-                predictions, all_indexes = run_kmeans(X_norm, Y, algo_name, clustering_args, dist_args, main_path, include_external = True)
+                predictions, all_indexes = run_kmeans(X_norm, Y, algo_name, clustering_args, dist_args, main_path, include_external = got_labels)
             path = f'{main_path}/Best/{name}.png'
 
             if X_norm.shape[1] == 2:

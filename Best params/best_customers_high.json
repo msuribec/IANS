@@ -1,0 +1,99 @@
+{
+    "subtractive": {
+        "2 clusters": {
+            "name": "Best subtractive in 2 clusters validation",
+            "dist_args": {
+                "distance_name": "Mahalanobis"
+            },
+            "clustering_args": {
+                "ra": 0.1,
+                "tol": 1
+            }
+        },
+        "3 clusters": {
+            "name": "Best subtractive in 3 clusters validation",
+            "dist_args": {
+                "distance_name": "Mahalanobis"
+            },
+            "clustering_args": {
+                "ra": 0.7,
+                "tol": 0.9
+            }
+        }
+    },
+    "mountain": {
+        "2 clusters": {
+            "name": "Best mountain in 2 clusters validation",
+            "dist_args": {
+                "distance_name": "Manhattan"
+            },
+            "clustering_args": {
+                "sigma": 0.2,
+                "tol": 0.2,
+                "gridp": 11
+            }
+        },
+        "3 clusters": {
+            "name": "Best mountain in 3 clusters validation",
+            "dist_args": {
+                "distance_name": "Euclidean"
+            },
+            "clustering_args": {
+                "sigma": 0.1,
+                "tol": 0.2,
+                "gridp": 11
+            }
+        }
+    },
+    "kmeans": {
+        "2 clusters": {
+            "name": "Best kmeans in 2 clusters validation",
+            "dist_args": {
+                "distance_name": "Cosine"
+            },
+            "clustering_args": {
+                "k": 3,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        },
+        "3 clusters": {
+            "name": "Best kmeans in 3 clusters validation",
+            "dist_args": {
+                "distance_name": "Minkowski",
+                "p": 3
+            },
+            "clustering_args": {
+                "k": 2,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        }
+    },
+    "fuzzycmeans": {
+        "2 clusters": {
+            "name": "Best fuzzycmeans in 2 clusters validation",
+            "dist_args": {
+                "distance_name": "Mahalanobis"
+            },
+            "clustering_args": {
+                "k": 2,
+                "m": 2,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        },
+        "3 clusters": {
+            "name": "Best fuzzycmeans in 3 clusters validation",
+            "dist_args": {
+                "distance_name": "Mahalanobis"
+            },
+            "clustering_args": {
+                "k": 3,
+                "m": 2,
+                "MAX_I": 100,
+                "tol": 0.001
+            }
+        }
+    }
+}

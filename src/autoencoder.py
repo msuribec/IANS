@@ -117,10 +117,10 @@ def find_best_autoencoder_high(X_norm, M, X_train, X_val,  X_test):
     print(min_index, results_high_d[min_index]['error'])
     return best_high_dimension_data.numpy()
 
-def find_best_low_high_dimension_data(dimension, X_norm, Y, RANDOM_SEED = 42):
+def find_best_low_high_dimension_data(dimension, X_norm, RANDOM_SEED = 42):
 
-    X_train, X_tv, Y_train, Y_tv = train_test_split(X_norm, Y, test_size=0.4, random_state=RANDOM_SEED)
-    X_test, X_val, Y_test, Y_val = train_test_split(X_tv, Y_tv, test_size=0.5, random_state=RANDOM_SEED)
+    X_train, X_tv = train_test_split(X_norm, test_size=0.4, random_state=RANDOM_SEED)
+    X_test, X_val = train_test_split(X_tv, test_size=0.5, random_state=RANDOM_SEED)
 
     M = X_norm.shape[1]
 

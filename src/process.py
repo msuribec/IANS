@@ -1,5 +1,5 @@
 import numpy as np
-from utils import ReadData
+from utils import ReadData, clean_dataframe
 
 class CleanData:
     """Class that represents a preprocessed dataset
@@ -24,21 +24,44 @@ class CleanData:
 
 
 
-def process_data(file_name):
+def process_data(file_name, columns_encode = None):
 
     reader = ReadData()
     
     data_df = reader.read_file(file_name)
-    X = data_df.drop(['target'], axis=1).to_numpy()
+
+    target_values = None
+        
+    if 'target' in list(data_df.columns):
+        target_values = data_df['target'].values
+        data_df = data_df.drop(['target'], axis=1)
+
+    str_columns = list(data_df.select_dtypes(include='object'))
+    if columns_encode is None:
+        columns_encode = str_columns
+    else:
+        columns_encode = columns_encode + str_columns
+    
+    columns_encode = (list(set(columns_encode)))
+    
+    data_df = clean_dataframe(data_df, columns_econde = columns_encode)
+
+    X = data_df.to_numpy()
     N, M = X.shape
-    target_values = data_df['target'].values
-    unique_classes = np.unique(target_values)
-    n_classes = len(unique_classes)
-    Y = np.zeros(N, dtype=np.int32)
-    for i,target in enumerate(target_values):
-        for j in range(n_classes):
-            if target == unique_classes[j]:
-                Y[i] = j
+
+    if target_values is not None:
+        unique_classes = np.unique(target_values)
+        n_classes = len(unique_classes)
+        Y = np.zeros(N, dtype=np.int32)
+        for i,target in enumerate(target_values):
+            for j in range(n_classes):
+                if target == unique_classes[j]:
+                    Y[i] = j
+    else:
+        Y = None
+    
+
+
     
     cd = CleanData(X)
     X_norm = cd.norm_data

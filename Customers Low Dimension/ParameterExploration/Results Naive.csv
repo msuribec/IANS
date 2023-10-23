@@ -1,0 +1,111 @@
+Algorithm,Distance,Parameters,Number of clusters
+neighbours,Euclidean,k = 10,42
+neighbours,Euclidean,k = 20,22
+neighbours,Euclidean,k = 30,16
+neighbours,Euclidean,k = 40,12
+neighbours,Euclidean,k = 50,11
+neighbours,Euclidean,k = 60,9
+neighbours,Euclidean,k = 70,8
+neighbours,Euclidean,k = 80,6
+neighbours,Euclidean,k = 90,5
+neighbours,Euclidean,k = 100,3
+neighbours,Euclidean,k = 110,3
+neighbours,Euclidean,k = 120,2
+neighbours,Euclidean,k = 130,2
+neighbours,Euclidean,k = 140,2
+neighbours,Euclidean,k = 150,2
+neighbours,Euclidean,k = 160,2
+neighbours,Euclidean,k = 170,2
+neighbours,Euclidean,k = 180,2
+neighbours,Euclidean,k = 190,2
+boxes,Euclidean,threshold = 0.6373583078384399,7
+boxes,Euclidean,threshold = 1.2747166156768799,2
+boxes,Euclidean,threshold = 1.9120749235153198,2
+neighbours,Manhattan,k = 10,40
+neighbours,Manhattan,k = 20,22
+neighbours,Manhattan,k = 30,17
+neighbours,Manhattan,k = 40,13
+neighbours,Manhattan,k = 50,10
+neighbours,Manhattan,k = 60,9
+neighbours,Manhattan,k = 70,8
+neighbours,Manhattan,k = 80,6
+neighbours,Manhattan,k = 90,5
+neighbours,Manhattan,k = 100,4
+neighbours,Manhattan,k = 110,3
+neighbours,Manhattan,k = 120,2
+neighbours,Manhattan,k = 130,2
+neighbours,Manhattan,k = 140,2
+neighbours,Manhattan,k = 150,2
+neighbours,Manhattan,k = 160,2
+neighbours,Manhattan,k = 170,2
+neighbours,Manhattan,k = 180,2
+neighbours,Manhattan,k = 190,2
+boxes,Manhattan,threshold = 1.0367121696472168,8
+boxes,Manhattan,threshold = 2.0734243392944336,3
+boxes,Manhattan,threshold = 3.1101365089416504,2
+neighbours,Minkowski with p = 3,k = 10,42
+neighbours,Minkowski with p = 3,k = 20,22
+neighbours,Minkowski with p = 3,k = 30,16
+neighbours,Minkowski with p = 3,k = 40,12
+neighbours,Minkowski with p = 3,k = 50,11
+neighbours,Minkowski with p = 3,k = 60,9
+neighbours,Minkowski with p = 3,k = 70,8
+neighbours,Minkowski with p = 3,k = 80,6
+neighbours,Minkowski with p = 3,k = 90,5
+neighbours,Minkowski with p = 3,k = 100,3
+neighbours,Minkowski with p = 3,k = 110,3
+neighbours,Minkowski with p = 3,k = 120,2
+neighbours,Minkowski with p = 3,k = 130,2
+neighbours,Minkowski with p = 3,k = 140,2
+neighbours,Minkowski with p = 3,k = 150,2
+neighbours,Minkowski with p = 3,k = 160,2
+neighbours,Minkowski with p = 3,k = 170,2
+neighbours,Minkowski with p = 3,k = 180,2
+neighbours,Minkowski with p = 3,k = 190,2
+boxes,Minkowski with p = 3,threshold = 1.6249024868011475,2
+boxes,Minkowski with p = 3,threshold = 3.249804973602295,2
+boxes,Minkowski with p = 3,threshold = 4.874707460403442,1
+neighbours,Mahalanobis,k = 10,39
+neighbours,Mahalanobis,k = 20,24
+neighbours,Mahalanobis,k = 30,17
+neighbours,Mahalanobis,k = 40,14
+neighbours,Mahalanobis,k = 50,12
+neighbours,Mahalanobis,k = 60,10
+neighbours,Mahalanobis,k = 70,8
+neighbours,Mahalanobis,k = 80,8
+neighbours,Mahalanobis,k = 90,6
+neighbours,Mahalanobis,k = 100,6
+neighbours,Mahalanobis,k = 110,5
+neighbours,Mahalanobis,k = 120,4
+neighbours,Mahalanobis,k = 130,5
+neighbours,Mahalanobis,k = 140,4
+neighbours,Mahalanobis,k = 150,3
+neighbours,Mahalanobis,k = 160,3
+neighbours,Mahalanobis,k = 170,4
+neighbours,Mahalanobis,k = 180,3
+neighbours,Mahalanobis,k = 190,3
+boxes,Mahalanobis,threshold = 1.5129697440244767,23
+boxes,Mahalanobis,threshold = 3.0259394880489534,4
+boxes,Mahalanobis,threshold = 4.53890923207343,2
+neighbours,Cosine,k = 10,41
+neighbours,Cosine,k = 20,21
+neighbours,Cosine,k = 30,16
+neighbours,Cosine,k = 40,13
+neighbours,Cosine,k = 50,10
+neighbours,Cosine,k = 60,8
+neighbours,Cosine,k = 70,7
+neighbours,Cosine,k = 80,5
+neighbours,Cosine,k = 90,4
+neighbours,Cosine,k = 100,4
+neighbours,Cosine,k = 110,3
+neighbours,Cosine,k = 120,2
+neighbours,Cosine,k = 130,2
+neighbours,Cosine,k = 140,2
+neighbours,Cosine,k = 150,2
+neighbours,Cosine,k = 160,2
+neighbours,Cosine,k = 170,2
+neighbours,Cosine,k = 180,2
+neighbours,Cosine,k = 190,2
+boxes,Cosine,threshold = 0.44926154613494873,2
+boxes,Cosine,threshold = 0.8985233306884766,2
+boxes,Cosine,threshold = 1.3477851152420044,2
