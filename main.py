@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # main('src/run_all.py', ['Data/Mall_Customers.csv' ,'Customers', '2,3', ''])
     main('src/run_all.py', ['Data/Mall_Customers.csv' ,'Customers Low Dimension', '2,3', 'low'])
 
-    main('src/run_all.py', ['Data/Mall_Customers.csv','Customers High Dimension', '2,3', 'high'])
+    # main('src/run_all.py', ['Data/Mall_Customers.csv','Customers High Dimension', '2,3', 'high'])
     # main('src/run_all.py', ['Data/Mall_Customers.csv','Customers UMAP', '2,3', 'umap' , "{'n_neighbors': 15, 'min_dist': 0.3, 'n_components': 2, 'metric':'euclidean'}"])
 
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     # main('src/run_all.py', ['Data/iris.csv' ,'Iris', '2,3', ''])
     main('src/run_all.py', ['Data/iris.csv' ,'Iris Low Dimension', '2,3' , 'low'])
-    main('src/run_all.py', ['Data/iris.csv' ,'Iris High Dimension', '2,3' , 'high'])
+    # main('src/run_all.py', ['Data/iris.csv' ,'Iris High Dimension', '2,3' , 'high'])
     # main('src/run_all.py', ['Data/iris.csv' ,'Iris UMAP', '2,3', 'umap' , "{'n_neighbors': 15, 'min_dist': 0.3, 'n_components': 2, 'metric':'euclidean'}"])
 
     # # Run the best algorithms in each case, get embedded data through UMAP and plot the results in a 2d scatter plot (with embedded data)
