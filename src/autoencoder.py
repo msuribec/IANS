@@ -2,7 +2,10 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split
-
+import sys
+from process import process_data
+import ast
+import pandas as pd
 class Autoencoder:
     def __init__(self, X_norm, X_train, X_test, hidden_size, learning_rate=0.001):
         self.X_norm = X_norm
@@ -128,3 +131,26 @@ def find_best_low_high_dimension_data(dimension, X_norm, RANDOM_SEED = 42):
         return find_best_autoencoder_loW(X_norm,M, X_train, X_val,  X_test)
     elif dimension == 'high':
         return find_best_autoencoder_high(X_norm,M, X_train, X_val,  X_test)
+
+
+
+if __name__ == '__main__':
+
+    file_name = sys.argv.pop(1)
+    csv_file_save = sys.argv.pop(1)
+    type= sys.argv.pop(1)
+
+    X_norm, Y, inv_covmat = process_data(file_name)
+
+
+    if type == 'low' or type == 'high':
+        X_norm = find_best_low_high_dimension_data(type, X_norm)
+        inv_covmat = np.linalg.inv(np.cov(X_norm, rowvar=False))
+
+
+    df = pd.DataFrame(X_norm)
+
+    if Y is not None:
+        df['target'] = Y
+    
+    df.to_csv(csv_file_save, index=False)
