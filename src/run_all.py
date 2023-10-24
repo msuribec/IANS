@@ -1,6 +1,8 @@
 from run_naive import run_all_naive_algorithms
 from run_density_based import run_mountain_algorithms
 from runkmeans import run_kmeans_algorithms
+from run_gravity import rungravity
+from cluster.gravity import GravityClustering
 from process import CleanData
 from distances import DistanceMatrices
 from utils import ReadData
@@ -10,6 +12,7 @@ import numpy as np
 from autoencoder import find_best_low_high_dimension_data
 from embedding import UMAP_EMBEDDING
 import ast
+from itertools import product
 
 
 def get_best_model(df, path, main_path, include_external = True):
@@ -70,7 +73,7 @@ def run_mountain(X, Y, dm, distance_definitions, main_path):
 
     ras = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
 
-    grid_points = [11]
+    grid_points = [6]
 
     path = 'Results Mountain and Subtractive.csv'
 
@@ -101,17 +104,38 @@ def run_k_means(X, Y, ns_clusters, distance_definitions, main_path):
     return best_k
 
 
-def run_all(X, Y, ns_clusters, distance_definitions, main_path):
-    dm = DistanceMatrices(main_path)
-    dm.compute_distance_matrices(X, distance_definitions)
+def run_gravity(X, Y, ns_clusters, distance_definitions, main_path):
+    g0s = [0.0002]
+    ps = [0.25]
+    epsilons = [0.0000001, 0.00005]
+    MAX_IS = [200, 100]
 
-    run_all_naive_algorithms(X, dm,  main_path= main_path)
-    best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
-    run_k_means(X, Y, ns_clusters, distance_definitions, main_path = main_path)
+    include_external = Y is not None
+
+    path = 'Results Gravity.csv'
+
+    df_results = rungravity(X,Y, ns_clusters, g0s,ps, epsilons,MAX_IS, distance_definitions,main_path, include_external)
+    best_k , best_overall, results_algos, results_algo_dist = get_best_model(df_results, path, main_path, include_external = include_external)
+    return best_k
+
+
+
+def run_all(X, Y, ns_clusters, distance_definitions, main_path):
+    # dm = DistanceMatrices(main_path)
+    # dm.compute_distance_matrices(X, distance_definitions)
+    # print("distance matrices computed")
+    # run_all_naive_algorithms(X, dm,  main_path= main_path)
+    # best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
+    # run_k_means(X, Y, ns_clusters, distance_definitions, main_path = main_path)
+    run_gravity(X, Y, ns_clusters, distance_definitions, main_path)
+
+
 
 
 
 if __name__ == '__main__':
+
+    np.random.seed(42)
 
     file_name = sys.argv.pop(1)
     main_path = sys.argv.pop(1)

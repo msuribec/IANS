@@ -77,7 +77,6 @@ def find_best_autoencoder_loW(X_norm, M, X_train, X_val,  X_test):
     min_error = np.inf
     min_index = 1
     results_low_d = {}
-    print(M)
     for i in range(1, M):
         a = Autoencoder(X_norm, X_train, X_test, i)
         a.train(X_val)
@@ -87,6 +86,8 @@ def find_best_autoencoder_loW(X_norm, M, X_train, X_val,  X_test):
         if current_error < min_error:
             min_error = current_error
             min_index = i
+        df = pd.DataFrame(a.encoded_data.numpy())
+        df.to_csv(f'try_{i}.csv', index=False)
 
     best_low_dimension_data = results_low_d[min_index]['encoded_data']
     print(min_index, results_low_d[min_index]['error'])
@@ -108,13 +109,16 @@ def find_best_autoencoder_high(X_norm, M, X_train, X_val,  X_test):
         a.predict()
         current_error = a.mse_test
         results_high_d[i] = {'error': current_error, 'encoded_data': a.encoded_data}
-        
+
         err_dif = abs(last_error - current_error)
         last_error = current_error
         if current_error < min_error:
             min_error = current_error
             min_index = i
+        
         i += 1
+    
+
 
     best_high_dimension_data = results_high_d[min_index]['encoded_data']
     print(min_index, results_high_d[min_index]['error'])
@@ -136,6 +140,7 @@ def find_best_low_high_dimension_data(dimension, X_norm, RANDOM_SEED = 42):
 
 if __name__ == '__main__':
 
+    tf.keras.utils.set_random_seed(42)
     file_name = sys.argv.pop(1)
     csv_file_save = sys.argv.pop(1)
     type= sys.argv.pop(1)
