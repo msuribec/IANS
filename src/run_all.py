@@ -121,12 +121,12 @@ def run_gravity(X, Y, ns_clusters, distance_definitions, main_path):
 
 
 def run_all(X, Y, ns_clusters, distance_definitions, main_path):
-    # dm = DistanceMatrices(main_path)
-    # dm.compute_distance_matrices(X, distance_definitions)
-    # print("distance matrices computed")
-    # run_all_naive_algorithms(X, dm,  main_path= main_path)
-    # best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
-    # run_k_means(X, Y, ns_clusters, distance_definitions, main_path = main_path)
+    dm = DistanceMatrices(main_path)
+    dm.compute_distance_matrices(X, distance_definitions)
+    print("distance matrices computed")
+    run_all_naive_algorithms(X, dm,  main_path= main_path)
+    best_k = run_mountain(X, Y, dm, distance_definitions, main_path = main_path)
+    run_k_means(X, Y, ns_clusters, distance_definitions, main_path = main_path)
     run_gravity(X, Y, ns_clusters, distance_definitions, main_path)
 
 

@@ -104,6 +104,15 @@ class CreateVenv:
             """
         for package in package_list:
             subprocess.run([self.pip_exe, "install", package])
+
+    def install_requirements(self, requirements_file):
+        """Installs the packages in the given requirements file
+        Parameters
+        ----------
+        requirements_file : str
+            Path of the requirements file
+        """
+        subprocess.run([self.pip_exe, "install", "-r", requirements_file])
     
     def run_file(self, file_path, args = None):
         """Runs the given file inside the virtual environment
