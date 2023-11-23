@@ -5,6 +5,21 @@ import pandas as pd
 from distances import DistanceMatrices
 
 class GravityClustering:
+    """Class that clusters data using the universal gravity rule algorithm
+    Parameters:
+        data (numpy.ndarray):
+            Data to cluster
+        algorithm (str):
+            Name of the clustering algorithm
+        clustering_args (dict):
+            Dictionary with the arguments of the clustering algorithm
+        distance_args (dict):
+            Dictionary with the arguments of the distance function
+        distance_name (str):
+            Name of the distance function
+        main_path (str):
+            Path where the results will be saved
+    """
     def __init__(self, data, algorithm, clustering_args, distance_args, distance_name, main_path = 'Results'):
 
         self.main_path = main_path
@@ -39,6 +54,14 @@ class GravityClustering:
         
 
     def get_memberships(self, centers):
+        """Returns the membership matrix of the data given the centers
+        Parameters:
+            centers (numpy.ndarray):
+                Centers of the clusters
+        Returns:
+            numpy.ndarray:
+                Membership matrix of the data given the centers
+        """
 
         N = self.data.shape[0]
         d_x_centers = DistanceMatrices().compute_distance_matrix(centers, self.data, **self.distance_args)**2
@@ -49,6 +72,19 @@ class GravityClustering:
     
 
     def gravity_clustering(self, k, G0, p , epsilon,  T):
+        """Clusters the data using the universal gravity rule algorithm
+        Parameters:
+            k (int):
+                Number of clusters
+            G0 (float):
+                Gravitational constant
+            p (float):
+                Power
+            epsilon (float):
+                Epsilon
+            T (int):
+                Time (Number of iterations)
+        """
         DM = DistanceMatrices()
         N, M = self.data.shape
         
@@ -95,135 +131,21 @@ class GravityClustering:
         self.memberships = memberships
 
 
-    def gravity_clustering_works2(self, k, G0, p , epsilon,  T):
-        DM = DistanceMatrices()
-        N, M = self.data.shape
-
-        
-        initial_indexes = np.random.choice(N, k, replace = False)
-        centers = self.data[initial_indexes]
-        velocities = np.zeros(shape=(k,M))
-        t = 0
-        while t <= T:
-
-            d_centers = np.power(DM.compute_distance_matrix_fast(centers, self.data, **self.distance_args),2)
-            minimum_distances_index = np.argmin(d_centers, axis = 0)
-            
-            memberships = np.zeros(shape=(k, N))
-            memberships[minimum_distances_index, np.arange(N)] = 1
-
-            Gt = G0* (1 - t/T)
-            forces = np.zeros(shape=(k,M))
-            for j in range(k):
-                mj = 1
-                mi = 1
-                mass = mi * mj
-                aux_indexes = np.where(memberships[j,:] == 1)[0]
-                members = self.data[aux_indexes, :]
-                Cj = len(members)
-
-                diff = members - centers[j,:]
-                Rij = d_centers[j,aux_indexes]
-                denominator = 1/(d_centers[j,aux_indexes]**p + epsilon)
-                S = 0
-                if Cj > 0:
-                    S = (Gt/Cj) *denominator.reshape(-1,1)*diff*np.random.rand(Cj, M)
-                forces[j,:] = np.sum(S, axis = 0)
-
-            new_velocities = velocities + forces
-            centers = centers + new_velocities
-            velocities = new_velocities
-            t += 1
-        self.centers = centers
-        self.memberships = memberships
-
-    def gravity_clustering_WORKS(self, k, G0, p , epsilon,  T):
-        DM = DistanceMatrices()
-        N, M = self.data.shape
-        initial_indexes = np.random.choice(N, k, replace = False)
-        initial_centers = self.data[initial_indexes]
-        velocities = np.zeros((k,M))
-
-        centers = initial_centers
-        iteration = 0
-        while iteration <= T:
-
-            membership_matrix = np.zeros((k, N))
-            distance_matrix = np.power(DM.compute_distance_matrix_fast(centers, self.data, **self.distance_args),2)
-            minimum_distances_index = np.argmin(distance_matrix, axis = 0)
-            cols = np.arange(N)
-            membership_matrix[minimum_distances_index, cols] = 1
-
-            g_t = G0*(1-iteration/T)
-            forces = np.zeros((k,M))
-            for j in range(k):
-                aux_indexes = np.where(membership_matrix[j,:] == 1)[0]
-                members = self.data[aux_indexes, :]
-                n_members = len(members)
-                diff = members - centers[j,:]
-                denominator = 1/(distance_matrix[j,aux_indexes]**p + epsilon)
-                sum_ = 0
-                if n_members > 0:
-                    sum_ = 1/n_members*denominator.reshape(-1,1)*diff*np.random.rand(n_members, M)
-                forces[j,:] = np.sum(sum_, axis = 0)
-            forces *= g_t
-            new_velocities = velocities + forces
-
-            centers = centers + new_velocities
-            velocities = new_velocities
-            iteration += 1
-        self.centers = centers
-        self.memberships = membership_matrix
-
-    def gravity_clustering_new(self, k, G0, p , epsilon,  T):
-        DM = DistanceMatrices()
-        N, M = self.data.shape
-        # Generate randomly positions of K initial agent (centroids) and set mass values of these objects to one
-        velocities = np.zeros((k,M))
-        centers = self.data[np.random.choice(N, k, replace = False)]
-        i = 0
-        while i <= T:
-            # Assign each point to the closest center
-            
-            d_centers = np.power(DM.compute_distance_matrix_fast(centers, self.data, **self.distance_args),2)
-            memberships = np.zeros((k, N))
-            memberships[np.argmin(d_centers, axis = 0), np.arange(N)] = 1
-
-            Gt = G0 * (1 - i/T)
-            F = np.zeros(shape=(k,M))
-
-            # Update centroids
-            for j in range(k):
-                indices_cluster = np.where(memberships[j,:] == 1)[0]
-                members = self.data[indices_cluster, :]
-                Cj = len(members)
-                diff = members - centers[j,:]
-                Rjp = d_centers[j, indices_cluster]**p
-                denominator = 1/(Rjp + epsilon)
-                partial_sum = 0
-                if Cj > 0:
-                    mass = np.random.rand(Cj, M)
-                    partial_sum = 1/Cj*denominator.reshape(-1,1)*diff*mass
-                F[j,:] = np.sum(partial_sum, axis = 0)
-            
-            F = Gt * F
-            new_velocities = velocities + F
-            new_centers = centers + new_velocities
-
-            centers = new_centers
-            velocities = new_velocities
-            i += 1
-        self.centers = centers
-        self.memberships = memberships
-
-
-
     def save_results(self, indexes = [0,1,2]):
+        """Saves the membership matrix and graphs the clusters in a 3d plot.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 3
+            
+        """
         self.graph_clusters(indexes)
         df = pd.DataFrame(self.memberships)
         df.to_csv(self.memership_mat_path)
 
     def get_groups(self):
+        """Returns a list of lists with the indexes of the data points in each cluster"""
+
         groups = []
         for c in range(self.memberships.shape[0]):
             group_c = []
@@ -234,6 +156,7 @@ class GravityClustering:
         return groups
 
     def graph_clusters(self, indexes = [0,1,2]):
+
         """Graphs the clusters in a 3d plot and saves it to the path specified in the constructor.
         The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
         Parameters:
@@ -281,6 +204,13 @@ class GravityClustering:
 
 
     def graph_cluster_2d(self, indexes = [0,1]):
+        """Graphs the clusters in a 2d plot and saves it to the path specified in the constructor.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 2
+            
+        """
     
         M = self.data.shape[1]
 
