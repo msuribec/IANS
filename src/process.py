@@ -25,6 +25,20 @@ class CleanData:
 
 
 def process_data(file_name, columns_encode = None):
+    """Function to process the data
+    Parameters:
+        file_name (str):
+            path to the file with the data
+        columns_encode (list):
+            list of columns to encode
+    Returns:
+        X_norm (np.array):
+            normalized array (N x M ) of the data to cluster. N is the number of points in the dataset and M is the number of features
+        Y (np.array):
+            array (N x 1) with the class of each point
+        inv_covmat (np.array):
+            inverse of the covariance matrix of the data
+    """
 
     reader = ReadData()
     

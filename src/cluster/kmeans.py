@@ -3,7 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from distances import DistanceMatrices
+
+
 class KmeansCluster:
+    """Class that clusters data using the kmeans and fuzzy cmeans algorithms
+    Parameters:
+        data (numpy.ndarray):
+            Data to cluster
+        algorithm (str):
+            Name of the clustering algorithm
+        clustering_args (dict):
+            Dictionary with the arguments of the clustering algorithm
+        distance_args (dict):
+            Dictionary with the arguments of the distance function
+        distance_name (str):
+            Name of the distance function
+        main_path (str):
+            Path where the results will be saved
+    """
     def __init__(self, data, algorithm, clustering_args, distance_args,distance_name, main_path = 'Results'):
 
         self.main_path = main_path
@@ -27,6 +44,7 @@ class KmeansCluster:
         self.cluster()
     
     def cluster(self):
+
         """Clusters the data using the specified algorithm and arguments"""
 
         if self.algorithm == 'kmeans':
@@ -34,11 +52,23 @@ class KmeansCluster:
         if self.algorithm == 'fuzzycmeans':
             self.fuzzyCmeans(**self.clustering_args)
         
-        #TODO: save labels
-        # TODO: save number of sets
         
 
     def kmeans(self, k=3, MAX_I=100, tol=1e-3):
+        """Clusters the data using the kmeans algorithm
+        Parameters:
+            k (int):
+                Number of clusters
+            MAX_I (int):
+                Maximum number of iterations
+            tol (float):
+                Tolerance
+        Returns:
+            numpy.ndarray:
+                Centers of the clusters
+            numpy.ndarray:
+                Membership matrix of the data given the centers
+        """
 
         N, _ = self.data.shape
         dm = DistanceMatrices()
@@ -73,6 +103,24 @@ class KmeansCluster:
 
 
     def fuzzyCmeans(self, k=3, m=2, MAX_I=100, tol=1e-3, verbose=True):
+        """Clusters the data using the fuzzy cmeans algorithm
+        Parameters:
+            k (int):
+                Number of clusters
+            m (int):
+                Fuzziness parameter
+            MAX_I (int):
+                Maximum number of iterations
+            tol (float):
+                Tolerance
+            verbose (bool):
+                If true prints the iteration and cost
+        Returns:
+            numpy.ndarray:
+                Centers of the clusters
+            numpy.ndarray:
+                Membership matrix of the data given the centers
+        """
         dm = DistanceMatrices()
         
         N, M = self.data.shape
@@ -114,12 +162,21 @@ class KmeansCluster:
         return centers, fuzzy_membership
     
     def save_results(self, indexes = [0,1,2]):
+        """Saves the membership matrix and graphs the clusters in a 3d plot.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 3
+            
+        """
         self.graph_clusters(indexes)
         df = pd.DataFrame(self.memberships)
         df.to_csv(self.memership_mat_path)
 
     
     def get_groups(self):
+        """Returns a list of lists with the indexes of the data points in each cluster"""
+
         members = np.max(self.memberships, axis=0)
         groups = []
         for c in range(self.memberships.shape[0]):
@@ -181,6 +238,14 @@ class KmeansCluster:
 
 
     def graph_cluster_2d(self, indexes = [0,1]):
+        """Graphs the clusters in a 2d plot and saves it to the path specified in the constructor.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 2
+            
+        """
+        
     
         M = self.data.shape[1]
 

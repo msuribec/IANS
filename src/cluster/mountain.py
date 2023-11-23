@@ -5,6 +5,29 @@ import pandas as pd
 from distances import DistanceMatrices
 
 class MountainClustering:
+    """Class that clusters data using the mountain clustering algorithm
+    Parameters:
+        data (numpy.ndarray):
+            Data to cluster
+        algorithm (str):
+            Name of the clustering algorithm
+        clustering_args (dict):
+            Dictionary with the arguments of the clustering algorithm
+        distance_args (dict):
+            Dictionary with the arguments of the distance function
+        distance_name (str):
+            Name of the distance function
+        distance_mat (numpy.ndarray):
+            Distance matrix of the data
+        distance_mat_v (numpy.ndarray):
+            Distance matrix of the vertices
+        grid (numpy.ndarray):
+            Grid of the vertices
+        grid_points (int):
+            Number of points in the grid
+        main_path (str):
+            Path where the results will be saved
+    """
     def __init__(self, data, algorithm, clustering_args, distance_args, distance_name, distance_mat = None,  distance_mat_v = None, grid = None,grid_points = None, main_path = 'Results'):
 
         self.main_path = main_path
@@ -47,6 +70,14 @@ class MountainClustering:
         
 
     def get_memberships(self, centers):
+        """Returns the membership matrix of the data given the centers
+        Parameters:
+            centers (numpy.ndarray):
+                Centers of the clusters
+        Returns:
+            numpy.ndarray:
+                Membership matrix of the data given the centers
+        """
 
         N = self.data.shape[0]
         d_x_centers = DistanceMatrices().compute_distance_matrix(centers, self.data, **self.distance_args)**2
@@ -98,6 +129,15 @@ class MountainClustering:
 
 
     def subtractive_clustering(self, ra, tol, rb = None):
+        """Clusters the data using the subtractive clustering algorithm
+        Parameters:
+            ra (float):
+                Radius of the first mountain
+            tol (float):
+                Tolerance
+            rb (float):
+                Radius of the second mountain
+        """
 
         if rb is None:
             rb = 1.5*ra
@@ -130,18 +170,13 @@ class MountainClustering:
                 center = self.data[max_index,:]
                 max_density = max(mountain)
 
-
-                # if center in centers:
-                #   break
-                
-                # centers = np.append(centers, center.reshape(1,-1), axis = 0)
                 
                 if center not in centers:
                     centers = np.append(centers, center.reshape(1,-1), axis = 0)
                 else:
                     rep_centers += 1
                 if rep_centers == 3:
-                    # print("hum")
+
                     break
                 if (abs(max_density) <= tol):
                     break
@@ -151,11 +186,20 @@ class MountainClustering:
         self.memberships = memberships
 
     def save_results(self, indexes = [0,1,2]):
+        """Saves the membership matrix and graphs the clusters in a 3d plot.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 3
+            
+        """
         self.graph_clusters(indexes)
         df = pd.DataFrame(self.memberships)
         df.to_csv(self.memership_mat_path)
 
     def get_groups(self):
+        """Returns a list of lists with the indexes of the data points in each cluster"""
+        
         groups = []
         for c in range(self.memberships.shape[0]):
             group_c = []
@@ -213,6 +257,14 @@ class MountainClustering:
 
 
     def graph_cluster_2d(self, indexes = [0,1]):
+        """Graphs the clusters in a 2d plot and saves it to the path specified in the constructor.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 2
+            
+        """
+
     
         M = self.data.shape[1]
 

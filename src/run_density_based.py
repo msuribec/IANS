@@ -8,7 +8,22 @@ import pandas as pd
 
 
 def get_params_mountain_algorithms(tols, sigmas, ras, betas = None, rbs=None  ):
-
+    """Returns the parameters of the mountain algorithms
+    Parameters:
+        tols (list):
+            List of tolerances
+        sigmas (list):
+            List of sigmas
+        ras (list):
+            List of ra
+        betas (list):
+            List of betas
+        rbs (list):
+            List of rb
+    Returns:
+        mountain_algo_params (dict):
+            Dictionary with the parameters of the mountain algorithms
+    """
     mountain_params = []
     if betas is not None:
         combinations_mountain = list(product(sigmas, betas, tols))
@@ -30,7 +45,7 @@ def get_params_mountain_algorithms(tols, sigmas, ras, betas = None, rbs=None  ):
 
     subtractive_mountain_params = []
     if rbs is not None:
-        combinations_subtractive = list(product(ras, rbs, tols)) #TODO:_ remove duplicates
+        combinations_subtractive = list(product(ras, rbs, tols))
         for ra, rb, tol in combinations_subtractive:
             clustering_args = {
                 'ra' : ra,
@@ -56,6 +71,16 @@ def get_params_mountain_algorithms(tols, sigmas, ras, betas = None, rbs=None  ):
 
 
 def get_vertices_grid(len_grid,M):
+    """Returns the vertices of a grid of M dimensions
+    Parameters:
+        len_grid (int):
+            Number of points in each dimension
+        M (int):
+            Number of dimensions
+    Returns:
+        vertices (numpy.ndarray):
+            Vertices of the grid
+    """
     alpha = 1/(len_grid-1)
     grid = [float(i*alpha) for i in range(len_grid)]
     lists_of_ranges = [grid for i in range(M)]
@@ -65,7 +90,36 @@ def get_vertices_grid(len_grid,M):
     return vertices
 
 def run_mountain_algorithms(X, Y, dm, distance_definitions, grid_points, tols, sigmas, ras, betas = None, rbs=None, main_path = 'Iris', include_external = True):
-
+    """Runs the mountain clustering algorithms
+    Parameters:
+        X (numpy.ndarray):
+            Data to cluster
+        Y (numpy.ndarray):
+            Labels of the data
+        dm (DistanceMatrices):
+            DistanceMatrices object
+        distance_definitions (dict):
+            Dictionary with the distance definitions
+        grid_points (list):
+            List of number of grid points to try
+        tols (list):
+            List of tolerances
+        sigmas (list):
+            List of sigmas
+        ras (list):
+            List of ra
+        betas (list):
+            List of betas
+        rbs (list):
+            List of rb
+        main_path (str):
+            Path where the results will be saved
+        include_external (bool):
+            Whether to include external indexes or not
+    Returns:
+        df_indices (pandas.DataFrame):
+            Dataframe with the internal and external indexes of the clustering algorithms
+    """
     mountain_algos_params = get_params_mountain_algorithms(tols, sigmas, ras, betas = betas, rbs=rbs)
 
 

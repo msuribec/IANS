@@ -1,6 +1,14 @@
 from src.utils import CreateVenv
 
 def main(file_path, args = None):
+    """Runs the given file inside a virtual environment
+    Parameters
+    ----------
+    file_path : str
+        Path of the file to run
+    args : list, optional
+        arguments to pass to the file, by default None
+    """
     c = CreateVenv() #create virtual environment
     c.install_requirements('requirements.txt') #install requirements
     c.run_file(file_path, args) #run file with list of arguments

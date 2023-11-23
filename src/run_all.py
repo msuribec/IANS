@@ -16,6 +16,26 @@ from itertools import product
 
 
 def get_best_model(df, path, main_path, include_external = True):
+    """Function to get the best model according to the internal and external indexes
+    Parameters:
+        df (pandas.DataFrame):
+            Dataframe with the results of the clustering algorithms
+        path (str):
+            Path where the results will be saved
+        main_path (str):
+            Path where the results will be saved
+        include_external (bool):
+            Whether to include external indexes or not
+    Returns:
+        best_k (int):
+            Number of clusters of the best model
+        best_overall (dict):
+            Dictionary with the results of the best model
+        results_algos (dict):
+            Dictionary with the results of the best model for each algorithm
+        results_algo_dist (dict):
+            Dictionary with the results of the best model for each algorithm and distance
+    """
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
     df['punctuation'] = 0
@@ -67,7 +87,22 @@ def get_best_model(df, path, main_path, include_external = True):
 
 
 def run_mountain(X, Y, dm, distance_definitions, main_path):
-
+    """Runs the mountain clustering algorithm
+    Parameters:
+        X (numpy.ndarray):
+            Data to cluster
+        Y (numpy.ndarray):
+            Labels of the data
+        dm (DistanceMatrices):
+            Distance matrices of the data
+        distance_definitions (dict):
+            Dictionary with the distance definitions
+        main_path (str):
+            Path where the results will be saved
+    Returns:
+        best_k (int):
+            Number of clusters of the best model
+    """
     sigmas = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
     tols = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1]
 
@@ -88,7 +123,22 @@ def run_mountain(X, Y, dm, distance_definitions, main_path):
 
 
 def run_k_means(X, Y, ns_clusters, distance_definitions, main_path):
-
+    """Runs the kmeans and fuzzy cmeans clustering algorithms
+    Parameters:
+        X (numpy.ndarray):
+            Data to cluster
+        Y (numpy.ndarray):
+            Labels of the data
+        ns_clusters (list):
+            List of number of clusters to try
+        distance_definitions (dict):
+            Dictionary with the distance definitions
+        main_path (str):
+            Path where the results will be saved
+    Returns:
+        best_k (int):
+            Number of clusters of the best model
+    """
 
     ms = [2]
 
@@ -105,6 +155,22 @@ def run_k_means(X, Y, ns_clusters, distance_definitions, main_path):
 
 
 def run_gravity(X, Y, ns_clusters, distance_definitions, main_path):
+    """Runs the gravity clustering algorithm
+    Parameters:
+        X (numpy.ndarray):
+            Data to cluster
+        Y (numpy.ndarray):
+            Labels of the data
+        ns_clusters (list):
+            List of number of clusters to try
+        distance_definitions (dict):
+            Dictionary with the distance definitions
+        main_path (str):
+            Path where the results will be saved
+    Returns:
+        best_k (int):
+            Number of clusters of the best model
+    """
     g0s = [0.0002]
     ps = [0.25]
     epsilons = [0.0000001, 0.00005]
@@ -121,6 +187,19 @@ def run_gravity(X, Y, ns_clusters, distance_definitions, main_path):
 
 
 def run_all(X, Y, ns_clusters, distance_definitions, main_path):
+    """Runs all the clustering algorithms
+    Parameters:
+        X (numpy.ndarray):
+            Data to cluster
+        Y (numpy.ndarray):
+            Labels of the data
+        ns_clusters (list):
+            List of number of clusters to try
+        distance_definitions (dict):
+            Dictionary with the distance definitions
+        main_path (str):
+            Path where the results will be saved
+    """
     dm = DistanceMatrices(main_path)
     dm.compute_distance_matrices(X, distance_definitions)
     print("distance matrices computed")

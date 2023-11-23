@@ -7,6 +7,19 @@ from itertools import product
 import numpy as np
 
 class Validation:
+    """Class that calculates the internal and external indexes of a clustering
+    Parameters:
+        memberships (numpy.ndarray):
+            Membership matrix of the clustering
+        data (numpy.ndarray):
+            Data that was clustered
+        distance_args (dict):
+            Arguments of the distance function
+        centroids (numpy.ndarray):
+            Centroids of the clusters
+        predictions (numpy.ndarray):
+            Predictions of the clustering
+    """
     def __init__(self, memberships, data, distance_args, centroids = None, predictions = None):
         self.memberships = memberships
         self.data = data
@@ -41,20 +54,22 @@ class Validation:
         assert self.N == N2, "Number of data points and memberships do not match"
 
     def get_distance_to_centers(self):
+        """Calculates the distance of each point to the centers of the clusters"""
         self.d_x_centers = DistanceMatrices().compute_distance_matrix_fast(self.centroids, self.data, **self.distance_args)
     
     def get_distance_center_to_centers(self):
+        """Calculates the distance of each center to the centers of the clusters"""
         self.d_centers = DistanceMatrices().compute_distance_matrix_fast(self.centroids, self.centroids, **self.distance_args)
 
     def get_ssw(self):
-
+        """Calculates the sum of squares within the clusters"""
         if self.d_x_centers is None:
             self.get_distance_to_centers()
 
         self.SSW = np.sum(np.multiply(self.memberships, self.d_x_centers**2))
     
     def get_ssb(self):
-
+        """Calculates the sum of squares between the clusters"""
         mean_data = np.mean(self.data, axis = 0)
         d_centers_median = DistanceMatrices().compute_distance_vector(self.centroids, mean_data, **self.distance_args)
 
@@ -64,7 +79,7 @@ class Validation:
         self.SSB = np.dot(d_centers_median**2,self.n_points_per_cluster)
     
     def get_CH_index(self):
-
+        """Calculates the Calinski-Harabasz index"""
         if self.SSB is None:
             self.get_ssb()
         if self.SSW is None:
@@ -75,12 +90,13 @@ class Validation:
         self.CH = numerator/denominator
 
     def get_BH_index(self):
-
+        """Calculates the Ball-Hall index"""
         if self.SSW is None:
                     self.get_ssw()
         self.BH = self.SSW/self.K
     
     def get_Hartigan(self):
+        """Calculates the Hartigan index"""
         if self.SSB is None:
             self.get_ssb()
         if self.SSW is None:
@@ -88,6 +104,7 @@ class Validation:
         self.Hartigan = np.log(self.SSB/self.SSW)
     
     def get_xu(self):
+        """Calculates the Xu index"""
         if self.SSB is None:
             self.get_ssb()
         if self.SSW is None:
@@ -95,6 +112,7 @@ class Validation:
         self.xu = self.M * np.log(np.sqrt(self.SSW/self.M*self.N**2)) + np.log(self.K)
 
     def get_DB(self):
+        """Calculates the Davies-Bouldin index"""
         if self.d_x_centers is None:
             self.get_distance_to_centers()
         if self.d_centers is None:
@@ -117,6 +135,7 @@ class Validation:
         self.DB = sum_db/self.K
 
     def get_silhouette(self):
+        """Calculates the silhouette index"""
         if self.n_points_per_cluster is None:
             self.get_number_of_points_clusters()
         distance_points = DistanceMatrices().compute_distance_matrix_fast(self.data,self.data, **self.distance_args)
@@ -149,9 +168,11 @@ class Validation:
         return self.silhouette
 
     def get_number_of_points_clusters(self):
+        """Calculates the number of points in each cluster"""
         self.n_points_per_cluster = np.sum(self.memberships, axis = 1)
     
     def find_centroids(self):
+        """Calculates the centroids of the clusters"""
         if self.n_points_per_cluster is None:
             self.get_number_of_points_clusters()
         centroids = (self.memberships @ self.data)/self.n_points_per_cluster.reshape(-1,1)
@@ -161,7 +182,7 @@ class Validation:
 
     def get_all_internal_indexes(self):
 
-
+        """Calculates all internal indexes"""
         if self.BH is None:
             self.get_BH_index()
         if self.CH is None:
@@ -187,7 +208,7 @@ class Validation:
         return internal_indexes
     
     def get_all_external_indexes(self, labels):
-
+        """Calculates all external indexes"""
         N = len(labels)
         combinations = set([(min(a,b),max(a,b)) for (a,b) in product(range(N), range(N)) if a!=b])
 
@@ -226,6 +247,7 @@ class Validation:
         return external_indexes
     
     def try_divide(self,num,div):
+        """Function that divides two numbers and returns np.inf if the denominator is 0"""
         if div == 0:
             return np.inf
         else:

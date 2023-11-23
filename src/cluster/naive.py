@@ -145,7 +145,20 @@ class NaiveClustering:
 
 
     def get_memberships_from_centers(self,X, centers, distance_args):
-
+        """Returns the membership matrix of the clustering algorithm in a csv file
+        The membership matrix is a (N X C) where N is the number of points and C the number of sets or clusters.
+        position i,j of the matrix is 1 if point i belongs to set j and 0 otherwise
+        Parameters:
+            X (np.array):
+                array of points to cluster
+            centers (np.array):
+                array of points that represent the centers of the clusters
+            distance_args (dict):
+                arguments for the distance function
+        Returns:
+            membership (np.array):
+                membership matrix
+        """
         N = X.shape[0]
         d_x_centers = DistanceMatrices(self.main_path).compute_distance_matrix(centers, X, **distance_args)**2
         index_min = np.argmin(d_x_centers, axis = 0)
@@ -198,6 +211,13 @@ class NaiveClustering:
 
 
     def graph_cluster_2d(self, indexes = [0,1]):
+        """Graphs the clusters in a 2d plot and saves it to the path specified in the constructor.
+        The graph will have the name specified in the constructor and only the features specified in the parameter will be graphed.
+        Parameters:
+            indexes (list):
+                list of indexes of the features to graph. Must be of length 2
+            
+        """
 
         M = self.data.shape[1]
 

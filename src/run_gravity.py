@@ -10,7 +10,30 @@ import pandas as pd
 
 
 def rungravity(X,Y, ns_clusters, g0s,ps, epsilons,MAX_IS,  distance_definitions,main_path, include_external):
-
+    """Runs the gravity clustering algorithm
+    Parameters:
+        X (numpy.ndarray):
+            Data to cluster
+        Y (numpy.ndarray):
+            Labels of the data
+        ns_clusters (list):
+            List of number of clusters to try
+        g0s (list):
+            List of g0s to try
+        ps (list):
+            List of ps to try
+        epsilons (list):
+            List of epsilons (tolerance) to try
+        MAX_IS (list):
+            List of maximum iterations to try
+        distance_definitions (dict):
+            Dictionary with the distance definitions
+        main_path (str):
+            Path where the results will be saved
+    Returns:
+        best_k (int):
+            Number of clusters of the best model
+    """
     indexes_results = []
 
     comb_gravity = list(product(ns_clusters, g0s, ps, epsilons, MAX_IS))

@@ -69,6 +69,15 @@ def get_params_for_naive_algortihm(distance_mat, n_intervals = 4, steps = 10, al
 
 
 def plot_neighbours_results(df, distances, main_path):
+    """Plots the results of the neighbours algorithm
+    Parameters:
+        df (pandas.DataFrame):
+            dataframe with the results
+        distances (list):
+            list of the distances used
+        main_path (str):
+            path where the results will be saved
+    """
 
     df.plot(x="k", y=distances, kind="line")
     plt.title("Number of neighbours vs Number of clusters obtained")
@@ -77,6 +86,15 @@ def plot_neighbours_results(df, distances, main_path):
     plt.close()
 
 def plot_boxes_results(results_dict, distances, main_path):
+    """Plots the results of the boxes algorithm
+    Parameters:
+        results_dict (dict):
+            dictionary with the results
+        distances (list):
+            list of the distances used
+        main_path (str):
+            path where the results will be saved
+    """
     for distance in distances:
         plt.plot(*zip(*results_dict[distance]))
         plt.title(f"Radius of box vs Number of clusters obtained for the {distance} distance")
@@ -85,6 +103,15 @@ def plot_boxes_results(results_dict, distances, main_path):
         plt.close()
 
 def plot_naive_results(neighbours_results, boxes_results, main_path = 'Iris'):
+    """Plots the results of the naive algorithms
+    Parameters:
+        neighbours_results (dict):
+            dictionary with the results of the neighbours algorithm
+        boxes_results (dict):
+            dictionary with the results of the boxes algorithm
+        main_path (str):
+            path where the results will be saved
+    """
     results_dict = []
     distances = list(neighbours_results.keys())
     values_list = list(neighbours_results.values())

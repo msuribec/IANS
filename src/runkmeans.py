@@ -7,27 +7,60 @@ from cluster.validation import Validation
 import pandas as pd
 
 def get_params_kmeans_algorithms(ns_clusters, ms, max_its, tols):
+    """Returns the parameters of the kmeans algorithms
+    Parameters:
+        ns_clusters (list):
+            List of number of clusters
+        ms (list):
+            List of m values
+        max_its (list):
+            List of maximum iterations
+        tols (list):
+            List of tolerances
+    Returns:
+        kmeans_params (dict):
+            Dictionary with the parameters of the kmeans algorithms
+    """
+    kmeans_params = {}
 
-  kmeans_params = {}
+    comb_kmeans = list(product(ns_clusters, max_its, tols))
+    comb_fcmeans = list(product(ns_clusters, ms, max_its, tols))
 
-  comb_kmeans = list(product(ns_clusters, max_its, tols))
-  comb_fcmeans = list(product(ns_clusters, ms, max_its, tols))
+    keys_kmeans = ('k', 'MAX_I', 'tol')
 
-  keys_kmeans = ('k', 'MAX_I', 'tol')
+    keys_fcmeans = ('k', 'm', 'MAX_I', 'tol')
 
-  keys_fcmeans = ('k', 'm', 'MAX_I', 'tol')
-
-  kmeans_params['kmeans'] = [ dict(zip(keys_kmeans,tup)) for tup in comb_kmeans]
-  kmeans_params['fuzzycmeans'] = [ dict(zip(keys_fcmeans,tup)) for tup in comb_fcmeans]
-  return kmeans_params
+    kmeans_params['kmeans'] = [ dict(zip(keys_kmeans,tup)) for tup in comb_kmeans]
+    kmeans_params['fuzzycmeans'] = [ dict(zip(keys_fcmeans,tup)) for tup in comb_fcmeans]
+    return kmeans_params
 
 
 
 def run_kmeans_algorithms(X, Y,  distance_definitions,ns_clusters, ms, max_its, tols, main_path = 'Iris', include_external = True):
+    """Runs the kmeans and fuzzy cmeans algorithms
+    Parameters:
+        X (numpy.ndarray):
+            Data to cluster
+        Y (numpy.ndarray):
+            Labels of the data
+        distance_definitions (dict):
+            Dictionary with the distance definitions
+        ns_clusters (list):
+            List of number of clusters to try
+        ms (list):
+            List of m values
+        max_its (list):
+            List of maximum iterations
+        tols (list):
+            List of tolerances
+        main_path (str):
+            Path where the results will be saved
+    Returns:
+        df_indices (pandas.DataFrame):
+            Dataframe with the results of the clustering algorithms
+    """
     indexes_results = []
 
-    #TODO: guardar en un dataframe los resultados de cada algoritmo
-    # coger self.params_str
     mountain_algos_params = get_params_kmeans_algorithms(ns_clusters, ms, max_its, tols)
 
     dm = DistanceMatrices(main_path)
